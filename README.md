@@ -8,8 +8,6 @@ Install packages from NPM.
 npm install
 ```
 
+## Running
 
-to run the code just do
-```cli
-npm run dev
-```
+In development use `npm run dev` and `npm run start` when in production.
