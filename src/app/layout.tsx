@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import Image from "next/image";
+import { LogoLightCroppedImage } from "./Branding";
 import "./globals.css";
+import Link from "next/link";
+import HorizontalWrap from "./components/HorizontalWrap";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,10 +41,55 @@ export default function RootLayout({
           }
         `}</style>
       </head>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-blue-200 min-h-screen`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-blue-200 min-h-screen`}>
+
+        <nav className="w-full flex items-center justify-between py-4 bg-gray-100 shadow-sm">
+
+          <HorizontalWrap>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+
+                <Link href="/">
+
+                  <Image
+                    src={LogoLightCroppedImage}
+                    alt="PNW Lion"
+                    className="w-40 object-contain"
+                  />
+
+                </Link>
+                
+                {/* <Image
+                  src="/pnw-lion.png"
+                  alt="PNW Logo"
+                  width={40}
+                  height={40}
+                  className="object-contain"
+                /> */}
+                {/* <div className="font-bold text-blue-600 text-lg ml-2">Campus Parking</div> */}
+
+              </div>
+
+              <div className="flex space-x-6">
+                
+                {/* <Link href="/" className="hover:text-blue-500 text-gray-700">Home</Link> */}
+                <Link href="/aboutUs" className="hover:text-blue-500 text-gray-700">About Us</Link>
+                <Link href="/contact" className="hover:text-blue-500 text-gray-700">Contact</Link>
+
+              </div>
+
+            </div>
+
+          </HorizontalWrap>
+        </nav>
+
+        <main className="py-12 bg-blue-200 min-h-screen">
+          
+          {children}
+
+        </main>
+
       </body>
     </html>
   );

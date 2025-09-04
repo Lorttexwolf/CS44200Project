@@ -1,8 +1,11 @@
 import React from "react";
+import HorizontalWrap from "../components/HorizontalWrap";
 
 const AboutUs = () => (
-  <main>
-    <h1 className="text-blue-500 text-4xl">About Us</h1>
+    
+  <HorizontalWrap>
+
+<h1 className="text-blue-500 text-4xl">About Us</h1>
     <p>
       Welcome to our project!
     </p>
@@ -26,7 +29,9 @@ const AboutUs = () => (
         Have questions? Reach out at <a href="mailto:info@dbproject.com">info@dbproject.com</a>.
       </p>
     </section>
-  </main>
+
+  </HorizontalWrap>
+
 );
 
 export default AboutUs;
