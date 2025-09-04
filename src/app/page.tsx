@@ -1,15 +1,13 @@
 import Image from "next/image";
-import Link from "next/link";
-import { LogoLightCroppedImage } from "./Branding";
 import HorizontalWrap from "./components/HorizontalWrap";
 
 export default function Home() {
   return (
-    <div className="text-lg">
+    <div className="text-lg py-10">
 
       <HorizontalWrap>
 
-        <h1 className="text-blue-500 text-6xl font-bold flex justify-center">About Us</h1>
+        <h1 className="text-blue-500 text-6xl font-bold flex justify-center">PNW parking</h1>
 
         <br/> {/* Maybe change for flex box separation? */}
 
