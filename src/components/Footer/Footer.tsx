@@ -43,7 +43,7 @@ export default function Footer() {
             
             <div
                 className="mt-10 border-t border-gray-700 pt-6 text-center text-sm text-gray-500">
-                made with ❤️ by PNW students.
+                Made with ❤️ by PNW Students.
             </div>
         </footer>
     );

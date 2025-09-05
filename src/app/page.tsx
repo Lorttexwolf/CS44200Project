@@ -49,9 +49,13 @@ export default function Home() {
                 </div>
 
             </HorizontalWrap>
+
             <div className="bg-blue-300">
-                <TeamGrid/>
+                <HorizontalWrap>
+                    <TeamGrid/>
+                </HorizontalWrap>
             </div>
+
 
         </div>
     );

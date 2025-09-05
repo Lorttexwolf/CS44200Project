@@ -3,11 +3,11 @@ import TeamMemberCard from "./TeamMemberCard";
 export default function TeamGrid() {
     return (
         <section className="py-20">
-            <div className="max-w-6xl mx-auto px-4">
+            <div>
                 <h2 className="text-5xl font-bold text-center text-blue-900 mb-4">
                     Meet the team!
                 </h2>
-                <p className="text-2xl text-center text-gray-900 max-w-3xl mx-auto mb-16">
+                <p className="text-2xl text-center text-gray-900 mx-auto mb-16">
                     We are PNW Computer Scinece students of CS 44200!
                 </p>
 
@@ -37,9 +37,12 @@ export default function TeamGrid() {
                     <TeamMemberCard
                         imageSrc="/team/Aarom.jpg"
                         name="Aaron Jung"
-                        role="FullStack Engineer"
+                        role="Software & Fullstack Developer"
                         roleColor="text-red-600"
-                        description=""/>
+                        skills={["C#", "React", "Rust", "SQL"]}
+                        email="jung416@pnw.edu"
+                        description="Computer Science student at PNW."
+                        githubUrl="https://github.com/Lorttexwolf"/>
 
                     <TeamMemberCard
                         imageSrc="/team/justin.jpg"
