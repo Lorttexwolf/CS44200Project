@@ -1,5 +1,4 @@
 import TeamMemberCard from "./TeamMemberCard";
-import Link from "next/link";
 
 export default function TeamGrid() {
     return (
@@ -13,38 +12,38 @@ export default function TeamGrid() {
                 </p>
 
                 <div className="grid md:grid-cols-4 gap-8">
-                    <Link href="/aboutUs/jihbinluo">
-                        <TeamMemberCard
-                            imageSrc="/team/Jih.jpg"
-                            name="Jih Bin Luo"
-                            role="FullStack engineer"
-                            roleColor="text-red-600"
-                            description=""/>
-                    </Link>
-                    <Link href="/aboutUs/isasosa">
-                        <TeamMemberCard
-                            imageSrc="/team/isa.jpg" 
-                            name="Isabella Sosa"
-                            role="FrontEnd engineer"
-                            roleColor="text-red-600"
-                            description=""/>
-                    </Link>
-                    <Link href="/aboutUs/AaaronJung">
-                        <TeamMemberCard
-                            imageSrc="/team/Aarom.jpg"
-                            name="Aaron Jung"
-                            role="FullStack Engineer"
-                            roleColor="text-red-600"
-                            description=""/>
-                    </Link>
-                    <Link href="/aboutUs/JustinMeng">
-                        <TeamMemberCard
-                            imageSrc="/team/justin.jpg"
-                            name="Justin Meng"
-                            role="BackEnd Engineer"
-                            roleColor="text-red-600"
-                            description=""/>
-                    </Link>
+
+                    <TeamMemberCard
+                        imageSrc="/team/Jih.jpg"
+                        name="Jih Bin Luo"
+                        role="FullStack engineer"
+                        roleColor="text-red-600"
+                        description=""
+                        skills={["React", "TailwindCSS", "Supabase", "NextJS"]}
+                        email="jluoliu@pnw.edu"
+                        githubUrl="https://github.com/Fortakenjay"/>
+
+                    <TeamMemberCard
+                        imageSrc="/team/isa.jpg"
+                        name="Isabella Sosa"
+                        role="FrontEnd engineer"
+                        roleColor="text-red-600"
+                        description=""/>
+
+                    <TeamMemberCard
+                        imageSrc="/team/Aarom.jpg"
+                        name="Aaron Jung"
+                        role="FullStack Engineer"
+                        roleColor="text-red-600"
+                        description=""/>
+
+                    <TeamMemberCard
+                        imageSrc="/team/justin.jpg"
+                        name="Justin Meng"
+                        role="BackEnd Engineer"
+                        roleColor="text-red-600"
+                        description=""/>
+
                 </div>
             </div>
         </section>
