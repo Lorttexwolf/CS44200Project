@@ -25,7 +25,7 @@ export default function TeamGrid() {
 
                     <TeamMemberCard
                         imageSrc="/team/isa.jpg"
-                        name="Isabella Sosa"
+                        name="Isabella Sosa" 
                         role="FrontEnd engineer"
                         roleColor="text-red-600"
                         description=""/>
