@@ -46,7 +46,10 @@ export default function TeamGrid() {
                         name="Justin Meng"
                         role="BackEnd Engineer"
                         roleColor="text-red-600"
-                        description=""/>
+                        description="Computer Science student at PNW"
+                        skills={["C#", "HTML"]}
+                        email="meng172@pnw.edu"
+                        githubUrl="https://github.com/JMCode12"/>
 
                 </div>
             </div>
