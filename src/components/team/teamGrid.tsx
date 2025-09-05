@@ -28,7 +28,11 @@ export default function TeamGrid() {
                         name="Isabella Sosa"  
                         role="FrontEnd engineer"
                         roleColor="text-red-600"
-                        description=""/>
+                        description="Computer Science student at PNW."
+                        skills={["HTML", "TailwindCSS"]}
+                        email="sosai@pnw.edu"
+                        githubUrl="https://github.com/isasero29"/>
+                        
 
                     <TeamMemberCard
                         imageSrc="/team/Aarom.jpg"
