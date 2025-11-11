@@ -1,8 +1,6 @@
 import type {Metadata}
 from "next";
 import "./globals.css";
-import Navbar from "@/components/navBar/navBar";
-import Footer from "@/components/Footer/Footer";
 import {Libre_Baskerville} from "next/font/google";
 
 export const metadata : Metadata = {
@@ -25,11 +23,11 @@ export default function RootLayout({children} : Readonly < {
     return (
         <html lang="en" className={libreBaskerville.className}>
             <body className="flex flex-col min-h-screen">
-                <Navbar/>
-                <main className="flex-grow bg-blue-200 w-full">
+
+                <main className="grow w-full">
                     {children}
                 </main>
-                <Footer/>
+
             </body>
         </html>
     );
