@@ -3,7 +3,7 @@ import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-type TeamMemberProps = {
+interface TeamMemberProps  {
     imageSrc: string;
     name: string;
     role: string;
