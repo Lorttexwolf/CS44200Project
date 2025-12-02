@@ -1,51 +1,27 @@
-
+'use client';
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMapPin, faLocationArrow } from "@fortawesome/free-solid-svg-icons";
+import Link from "next/link";
 
 import HorizontalWrap from "./HorizontalWrap";
 import { Card, CardContent, CardHeader } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useParkingLots } from "@/hooks/useParkingLots";
 
-const parkingLots = [
-  {
-    name: "Central Campus Garage",
-    address: "123 University Ave",
-    distance: "0.2 miles",
-    available: 24,
-    total: 150,
-    price: "$5/day",
-    image: "https://images.unsplash.com/photo-1762398948143-85d8293c4ca8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBwYXJraW5nJTIwc3RydWN0dXJlfGVufDF8fHx8MTc2Mjg5NTQ0N3ww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    covered: true,
-    hourlyRate: "$2/hour"
-  },
-  {
-    name: "North Lot",
-    address: "456 College St",
-    distance: "0.5 miles",
-    available: 48,
-    total: 200,
-    price: "$3/day",
-    image: "https://images.unsplash.com/photo-1759092563843-6e17aa286dfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsZWdlJTIwY2FtcHVzJTIwcGFya2luZ3xlbnwxfHx8fDE3NjI4OTU0NDd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    covered: false,
-    hourlyRate: "$1.50/hour"
-  },
-  {
-    name: "Stadium Parking",
-    address: "789 Athletic Dr",
-    distance: "0.8 miles",
-    available: 156,
-    total: 500,
-    price: "$2/day",
-    image: "https://images.unsplash.com/photo-1759092563843-6e17aa286dfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb2xsZWdlJTIwY2FtcHVzJTIwcGFya2luZ3xlbnwxfHx8fDE3NjI4OTU0NDd8MA&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral",
-    covered: false,
-    hourlyRate: "$1/hour"
-  }
-];
+
 
 export default function ParkingLots() {
+  // Fetch parking lots from database (campusId = 1)
+  const { parkingLots, loading, error } = useParkingLots(1);
+  
+  // Get 3 most popular (lowest availability percentage)
+  const topLots = [...parkingLots]
+    .sort((a, b) => (a.available / a.total) - (b.available / b.total))
+    .slice(0, 3);
+
   const getAvailabilityColor = (available: number, total: number) => {
     const percentage = (available / total) * 100;
     if (percentage > 30) return "bg-green-500";
@@ -55,16 +31,83 @@ export default function ParkingLots() {
 
   const getAvailabilityBadge = (available: number, total: number) => {
     const percentage = (available / total) * 100;
-    if (percentage > 30) return { variant: "default" as const, text: "Available" };
-    if (percentage > 10) return { variant: "secondary" as const, text: "Limited" };
-    return { variant: "destructive" as const, text: "Almost Full" };
+    if (percentage > 30) return { variant: "default" as const, text: "Available", color: "bg-green-100 text-green-800 border border-green-300" };
+    if (percentage > 10) return { variant: "secondary" as const, text: "Limited", color: "bg-yellow-100 text-yellow-800 border border-yellow-300" };
+    return { variant: "destructive" as const, text: "Almost Full", color: "bg-red-100 text-red-800 border border-red-300" };
   };
+
+  if (loading) {
+    return (
+      <section id="locations" className="py-20 bg-white">
+        <HorizontalWrap>
+          <div className="text-center mb-16">
+            <div className="h-8 bg-gray-200 rounded w-96 mx-auto mb-4 animate-pulse"></div>
+            <div className="h-6 bg-gray-200 rounded w-[500px] mx-auto animate-pulse"></div>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <Card key={i} className="overflow-hidden">
+                <div className="relative h-48 bg-gray-200 animate-pulse"></div>
+                
+                <CardHeader>
+                  <div className="space-y-2">
+                    <div className="h-6 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2 animate-pulse"></div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t">
+                    <div className="space-y-2">
+                      <div className="h-5 bg-gray-200 rounded w-16 animate-pulse"></div>
+                      <div className="h-4 bg-gray-200 rounded w-20 animate-pulse"></div>
+                    </div>
+                    <div className="h-10 bg-gray-200 rounded w-28 animate-pulse"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="text-center mt-12">
+            <div className="h-12 bg-gray-200 rounded w-40 mx-auto animate-pulse"></div>
+          </div>
+        </HorizontalWrap>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section id="locations" className="py-20 bg-white">
+        <HorizontalWrap>
+          <div className="text-center">
+            <p className="text-xl text-red-600">Error loading parking lots: {error}</p>
+          </div>
+        </HorizontalWrap>
+      </section>
+    );
+  }
 
   return (
     <section id="locations" className="py-20 bg-white">
       <HorizontalWrap>
         <div className="text-center mb-16">
-          <h2 className="text-gray-900 mb-4">
+          <h2 className="text-gray-900 mb-4 text-3xl">
             Popular Campus Parking Locations
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -73,7 +116,7 @@ export default function ParkingLots() {
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {parkingLots.map((lot, index) => {
+          {topLots.map((lot, index) => {
             const badge = getAvailabilityBadge(lot.available, lot.total);
             return (
               <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
@@ -83,12 +126,9 @@ export default function ParkingLots() {
                     alt={lot.name}
                     className="w-full h-full object-cover"
                   />
-                  <Badge 
-                    variant={badge.variant}
-                    className="absolute top-4 right-4"
-                  >
+                  <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold shadow-lg ${badge.color}`}>
                     {badge.text}
-                  </Badge>
+                  </span>
                 </div>
                 
                 <CardHeader>
@@ -134,12 +174,20 @@ export default function ParkingLots() {
                       <p className="text-gray-900">{lot.price}</p>
                       <p className="text-sm text-gray-500">{lot.hourlyRate}</p>
                     </div>
-                    <Button>Reserve Now</Button>
+                    <Button className="cursor-pointer bg-blue-700 text-white hover:bg-blue-800">Reserve Now</Button>
                   </div>
                 </CardContent>
               </Card>
             );
           })}
+        </div>
+
+        <div className="text-center mt-12">
+          <Link href="/map">
+            <Button size="lg" className="px-8 border-2  hover:border-black transition-colors hover:bg-white hover:text-black cursor-pointer">
+              Look for More
+            </Button>
+          </Link>
         </div>
       </HorizontalWrap>
     </section>
