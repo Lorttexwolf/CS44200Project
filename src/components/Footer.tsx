@@ -3,6 +3,7 @@ import {faMapPin, faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import {faInstagram, faTwitter, faFacebook} from "@fortawesome/free-brands-svg-icons";
 
 import HorizontalWrap from "./HorizontalWrap";
+import Image from "next/image";
 
 export default function Footer() {
     return (
@@ -12,10 +13,7 @@ export default function Footer() {
                     {/* Logo and Description */}
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-2 mb-4">
-                            <div className="bg-blue-600 p-2 rounded-lg">
-                                <FontAwesomeIcon icon={faMapPin} className="size-6 text-white"/>
-                            </div>
-                            <span className="text-white">SpotFinder</span>
+                            <Image src="/logo-TRANSPARENT-White.png" alt="Logo" width={150} height={50}/>
                         </div>
                         <p className="text-sm text-gray-400">
                             Making campus parking simple, affordable, and stress-free for students
@@ -96,7 +94,7 @@ export default function Footer() {
                             <FontAwesomeIcon icon={faTwitter} className="size-5"/>
                         </a>
                         <a href="#" className="hover:text-white transition">
-                          <FontAwesomeIcon icon={faFacebook} className="size-5"/>
+                            <FontAwesomeIcon icon={faFacebook} className="size-5"/>
                         </a>
                         <a href="#" className="hover:text-white transition">
                             <FontAwesomeIcon icon={faEnvelope} className="size-5"/>

@@ -2,6 +2,8 @@ import type {Metadata}
 from "next";
 import "./globals.css";
 import {Libre_Baskerville} from "next/font/google";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 export const metadata : Metadata = {
     title: "PNW Parking",
@@ -23,10 +25,12 @@ export default function RootLayout({children} : Readonly < {
     return (
         <html lang="en" className={libreBaskerville.className}>
             <body className="flex flex-col min-h-screen">
+                <Header/>
 
                 <main className="grow w-full">
                     {children}
                 </main>
+                <Footer/>
 
             </body>
         </html>
