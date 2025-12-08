@@ -1,30 +1,6 @@
--- SpotFinder Database Schema
--- Created: December 2, 2025
--- Includes multi-floor parking and features support
-
--- Create database if it doesn't exist
 CREATE DATABASE IF NOT EXISTS PNWPARKING;
 USE PNWPARKING;
 
--- Drop tables if they exist (in reverse order of dependencies)
-DROP TABLE IF EXISTS Reserved;
-DROP TABLE IF EXISTS ParkingSpotOccupationalRecord;
-DROP TABLE IF EXISTS ParkingSpot;
-DROP TABLE IF EXISTS ParkingFloor;
-DROP TABLE IF EXISTS ParkingLotFeatures;
-DROP TABLE IF EXISTS ParkingLot;
-DROP TABLE IF EXISTS CampusUser;
-DROP TABLE IF EXISTS Campus;
-DROP TABLE IF EXISTS CampusEmailVerification;
-DROP TABLE IF EXISTS AccountEmailVerification;
-DROP TABLE IF EXISTS PasswordResetCodes;
-DROP TABLE IF EXISTS Account;
-
--- =====================================================
--- Account Management Tables
--- =====================================================
-
--- Main Account table
 CREATE TABLE Account (
     Account_Email VARCHAR(255) PRIMARY KEY,
     Verified BOOLEAN DEFAULT FALSE,
@@ -33,25 +9,18 @@ CREATE TABLE Account (
     Service_Permissions ENUM('user', 'admin', 'campus_admin') DEFAULT 'user',
     Password_Hash VARCHAR(255) NOT NULL,
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_verified (Verified),
-    INDEX idx_service_permissions (Service_Permissions)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
 
--- Password Reset Codes
 CREATE TABLE PasswordResetCodes (
     Pk_Account_Email VARCHAR(255) PRIMARY KEY,
     Code VARCHAR(10) NOT NULL,
     Issued_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Expires_At TIMESTAMP NOT NULL,
     Used BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (Pk_Account_Email) REFERENCES Account(Account_Email) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX idx_code (Code),
-    INDEX idx_expires_at (Expires_At)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (Pk_Account_Email) REFERENCES Account(Account_Email) ON DELETE CASCADE ON UPDATE CASCADE,
+);
 
--- Account Email Verification
 CREATE TABLE AccountEmailVerification (
     Pk_Account_Email VARCHAR(255) PRIMARY KEY,
     Code VARCHAR(10) NOT NULL,
@@ -61,44 +30,22 @@ CREATE TABLE AccountEmailVerification (
         ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_code (Code),
     INDEX idx_expires_at (Expires_At)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- =====================================================
--- Campus Management Tables
--- =====================================================
-
--- Campus table
 CREATE TABLE Campus (
-    Pk_Campus_Email VARCHAR(255) PRIMARY KEY,
-    Pk_User_Email VARCHAR(255) NOT NULL,
+    Pk_Campus_ID INT AUTO_INCREMENT PRIMARY KEY,
     Verified BOOLEAN DEFAULT FALSE,
-    Campus_Permissions ENUM('basic', 'premium', 'enterprise') DEFAULT 'basic',
-    Pk_Campus_ID INT AUTO_INCREMENT UNIQUE,
     Campus_Name VARCHAR(255) NOT NULL,
-    Icon_URL VARCHAR(500),
-    Email_Domain VARCHAR(255) NOT NULL,
+    Campus_Short_Name VARCHAR(255) NOT NULL UNIQUE,
+    Campus_Description VARCHAR(1000) NOT NULL,
+    Icon_URL VARCHAR(500) NOT NULL,
+    Video_URL VARCHAR(500),
+    Domain VARCHAR(255) NOT NULL,
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (Pk_User_Email) REFERENCES Account(Account_Email) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX idx_campus_id (Pk_Campus_ID),
-    INDEX idx_verified (Verified),
-    INDEX idx_email_domain (Email_Domain)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    FOREIGN KEY (Pk_User_Email) REFERENCES Account(Account_Email) ON DELETE CASCADE ON UPDATE CASCADE
+);
 
--- Campus Email Verification
-CREATE TABLE CampusEmailVerification (
-    Pk_Campus_Email VARCHAR(255) PRIMARY KEY,
-    Code VARCHAR(10) NOT NULL,
-    Issued_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Expires_At TIMESTAMP NOT NULL,
-    FOREIGN KEY (Pk_Campus_Email) REFERENCES Campus(Pk_Campus_Email) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX idx_code (Code),
-    INDEX idx_expires_at (Expires_At)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Campus Users (many-to-many relationship)
 CREATE TABLE CampusUser (
     Pk_Campus_Email VARCHAR(255),
     Pk_User_Email VARCHAR(255),
@@ -112,13 +59,8 @@ CREATE TABLE CampusUser (
         ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_user_email (Pk_User_Email),
     INDEX idx_verified (Verified)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- =====================================================
--- Parking Management Tables
--- =====================================================
-
--- Parking Lot table (enhanced with multi-floor support)
 CREATE TABLE ParkingLot (
     Pk_Lot_ID INT AUTO_INCREMENT PRIMARY KEY,
     Pk_Campus_ID INT NOT NULL,
@@ -142,9 +84,8 @@ CREATE TABLE ParkingLot (
     INDEX idx_location (Latitude, Longitude),
     INDEX idx_availability (Available_Spots),
     INDEX idx_has_multiple_floors (Has_Multiple_Floors)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- Parking Lot Features (general features for entire lot)
 CREATE TABLE ParkingLotFeatures (
     Feature_ID INT AUTO_INCREMENT PRIMARY KEY,
     Pk_Lot_ID INT NOT NULL,
@@ -154,9 +95,8 @@ CREATE TABLE ParkingLotFeatures (
         ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_lot_id (Pk_Lot_ID),
     INDEX idx_feature_name (Feature_Name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- Parking Floor table (NEW - for multi-floor garages)
 CREATE TABLE ParkingFloor (
     Floor_ID INT AUTO_INCREMENT PRIMARY KEY,
     Pk_Lot_ID INT NOT NULL,
@@ -172,9 +112,8 @@ CREATE TABLE ParkingFloor (
     INDEX idx_lot_id (Pk_Lot_ID),
     INDEX idx_floor_number (Floor_Number),
     INDEX idx_availability (Available_Spots)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- Floor Features (NEW - features specific to each floor)
 CREATE TABLE FloorFeatures (
     Feature_ID INT AUTO_INCREMENT PRIMARY KEY,
     Floor_ID INT NOT NULL,
@@ -184,67 +123,57 @@ CREATE TABLE FloorFeatures (
         ON DELETE CASCADE ON UPDATE CASCADE,
     INDEX idx_floor_id (Floor_ID),
     INDEX idx_feature_name (Feature_Name)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+);
 
--- Parking Spot table (enhanced with floor support)
-CREATE TABLE ParkingSpot (
-    Pk_Spot_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Pk_Lot_ID INT NOT NULL,
-    Floor_ID INT NULL, -- NULL for single-level lots
-    Spot_Number VARCHAR(50) NOT NULL,
-    Longitude DECIMAL(11, 8),
-    Latitude DECIMAL(10, 8),
-    Is_Occupied BOOLEAN DEFAULT FALSE,
-    Spot_Type ENUM('standard', 'accessible', 'ev_charging', 'compact', 'motorcycle') DEFAULT 'standard',
-    Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (Pk_Lot_ID) REFERENCES ParkingLot(Pk_Lot_ID) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (Floor_ID) REFERENCES ParkingFloor(Floor_ID) 
-        ON DELETE SET NULL ON UPDATE CASCADE,
-    UNIQUE KEY unique_spot_per_lot (Pk_Lot_ID, Spot_Number),
-    INDEX idx_lot_id (Pk_Lot_ID),
-    INDEX idx_floor_id (Floor_ID),
-    INDEX idx_occupied (Is_Occupied),
-    INDEX idx_spot_type (Spot_Type)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- -- Parking Spot table (enhanced with floor support)
+-- CREATE TABLE ParkingSpot (
+--     Pk_Spot_ID INT AUTO_INCREMENT PRIMARY KEY,
+--     Pk_Lot_ID INT NOT NULL,
+--     Floor_ID INT NULL, -- NULL for single-level lots
+--     Spot_Number VARCHAR(50) NOT NULL,
+--     Longitude DECIMAL(11, 8),
+--     Latitude DECIMAL(10, 8),
+--     Is_Occupied BOOLEAN DEFAULT FALSE,
+--     Spot_Type ENUM('standard', 'accessible', 'ev_charging', 'compact', 'motorcycle') DEFAULT 'standard',
+--     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     FOREIGN KEY (Pk_Lot_ID) REFERENCES ParkingLot(Pk_Lot_ID) 
+--         ON DELETE CASCADE ON UPDATE CASCADE,
+--     FOREIGN KEY (Floor_ID) REFERENCES ParkingFloor(Floor_ID) 
+--         ON DELETE SET NULL ON UPDATE CASCADE,
+--     UNIQUE KEY unique_spot_per_lot (Pk_Lot_ID, Spot_Number),
+--     INDEX idx_lot_id (Pk_Lot_ID),
+--     INDEX idx_floor_id (Floor_ID),
+--     INDEX idx_occupied (Is_Occupied),
+--     INDEX idx_spot_type (Spot_Type)
+-- );
 
--- Parking Spot Occupational Record
-CREATE TABLE ParkingSpotOccupationalRecord (
-    Record_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Pk_Spot_ID INT NOT NULL,
-    Time_Changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Time_Updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    Occupied BOOLEAN NOT NULL,
-    FOREIGN KEY (Pk_Spot_ID) REFERENCES ParkingSpot(Pk_Spot_ID) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX idx_spot_id (Pk_Spot_ID),
-    INDEX idx_time_changed (Time_Changed),
-    INDEX idx_occupied (Occupied)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- -- Parking Spot Occupational Record
+-- CREATE TABLE ParkingSpotOccupationalRecord (
+--     Record_ID INT AUTO_INCREMENT PRIMARY KEY,
+--     Pk_Spot_ID INT NOT NULL,
+--     Time_Changed TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     Time_Updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     Occupied BOOLEAN NOT NULL,
+--     FOREIGN KEY (Pk_Spot_ID) REFERENCES ParkingSpot(Pk_Spot_ID) 
+--         ON DELETE CASCADE ON UPDATE CASCADE,
+--     INDEX idx_spot_id (Pk_Spot_ID),
+--     INDEX idx_time_changed (Time_Changed),
+--     INDEX idx_occupied (Occupied)
+-- );
 
--- Reservation table
-CREATE TABLE Reserved (
-    Reservation_ID INT AUTO_INCREMENT PRIMARY KEY,
-    Pk_Parking_Spot_ID INT NOT NULL,
-    Pk_User_Email VARCHAR(255) NOT NULL,
-    Reason VARCHAR(500),
-    Start_Time TIMESTAMP NOT NULL,
-    End_Time TIMESTAMP NOT NULL,
-    Start_Date DATE NOT NULL,
-    End_Date DATE NOT NULL,
-    Status ENUM('active', 'completed', 'cancelled') DEFAULT 'active',
-    Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (Pk_Parking_Spot_ID) REFERENCES ParkingSpot(Pk_Spot_ID) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (Pk_User_Email) REFERENCES Account(Account_Email) 
-        ON DELETE CASCADE ON UPDATE CASCADE,
-    INDEX idx_spot_id (Pk_Parking_Spot_ID),
-    INDEX idx_user_email (Pk_User_Email),
-    INDEX idx_dates (Start_Date, End_Date),
-    INDEX idx_status (Status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- CREATE TABLE Reserved (
+--     Reservation_ID INT AUTO_INCREMENT PRIMARY KEY,
+--     Reason VARCHAR(500),
+--     Start_Time TIMESTAMP NOT NULL,
+--     End_Time TIMESTAMP NOT NULL,
+--     Status ENUM('active', 'completed', 'cancelled') DEFAULT 'active',
+--     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     Updated_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     INDEX idx_dates (Start_Date, End_Date),
+--     INDEX idx_status (Status)
+
+-- );
 
 -- =====================================================
 -- Triggers for maintaining availability counts
@@ -252,32 +181,6 @@ CREATE TABLE Reserved (
 
 -- Trigger to update floor availability when spot occupancy changes
 DELIMITER //
-
-CREATE TRIGGER update_floor_availability_after_spot_insert
-AFTER INSERT ON ParkingSpot
-FOR EACH ROW
-BEGIN
-    IF NEW.Floor_ID IS NOT NULL THEN
-        UPDATE ParkingFloor
-        SET Total_Spots = Total_Spots + 1,
-            Available_Spots = CASE WHEN NEW.Is_Occupied = FALSE THEN Available_Spots + 1 ELSE Available_Spots END
-        WHERE Floor_ID = NEW.Floor_ID;
-    END IF;
-END//
-
-CREATE TRIGGER update_floor_availability_after_spot_update
-AFTER UPDATE ON ParkingSpot
-FOR EACH ROW
-BEGIN
-    IF NEW.Floor_ID IS NOT NULL AND OLD.Is_Occupied != NEW.Is_Occupied THEN
-        UPDATE ParkingFloor
-        SET Available_Spots = CASE 
-            WHEN NEW.Is_Occupied = TRUE THEN Available_Spots - 1 
-            ELSE Available_Spots + 1 
-        END
-        WHERE Floor_ID = NEW.Floor_ID;
-    END IF;
-END//
 
 -- Trigger to update parking lot availability when floor changes
 CREATE TRIGGER update_lot_availability_after_floor_update
@@ -338,24 +241,24 @@ LEFT JOIN FloorFeatures ff ON pf.Floor_ID = ff.Floor_ID
 GROUP BY pf.Floor_ID;
 
 -- View for active reservations
-CREATE VIEW ActiveReservations AS
-SELECT 
-    r.Reservation_ID,
-    r.Pk_User_Email,
-    a.First_Name,
-    a.Last_Name,
-    ps.Spot_Number,
-    pl.Lot_Name,
-    pf.Floor_Name,
-    r.Start_Time,
-    r.End_Time,
-    r.Status
-FROM Reserved r
-JOIN Account a ON r.Pk_User_Email = a.Account_Email
-JOIN ParkingSpot ps ON r.Pk_Parking_Spot_ID = ps.Pk_Spot_ID
-JOIN ParkingLot pl ON ps.Pk_Lot_ID = pl.Pk_Lot_ID
-LEFT JOIN ParkingFloor pf ON ps.Floor_ID = pf.Floor_ID
-WHERE r.Status = 'active';
+-- CREATE VIEW ActiveReservations AS
+-- SELECT 
+--     r.Reservation_ID,
+--     r.Pk_User_Email,
+--     a.First_Name,
+--     a.Last_Name,
+--     ps.Spot_Number,
+--     pl.Lot_Name,
+--     pf.Floor_Name,
+--     r.Start_Time,
+--     r.End_Time,
+--     r.Status
+-- FROM Reserved r
+-- JOIN Account a ON r.Pk_User_Email = a.Account_Email
+-- JOIN ParkingSpot ps ON r.Pk_Parking_Spot_ID = ps.Pk_Spot_ID
+-- JOIN ParkingLot pl ON ps.Pk_Lot_ID = pl.Pk_Lot_ID
+-- LEFT JOIN ParkingFloor pf ON ps.Floor_ID = pf.Floor_ID
+-- WHERE r.Status = 'active';
 
 -- =====================================================
 -- Sample Data Insertion
@@ -363,11 +266,11 @@ WHERE r.Status = 'active';
 
 -- Sample Account
 INSERT INTO Account (Account_Email, Verified, First_Name, Last_Name, Service_Permissions, Password_Hash)
-VALUES ('admin@purduenw.edu', TRUE, 'Admin', 'User', 'admin', '$2b$10$samplehashedpassword');
+VALUES ('admin@pnw.edu', TRUE, 'Admin', 'User', 'admin', '$2b$10$samplehashedpassword');
 
 -- Sample Campus
-INSERT INTO Campus (Pk_Campus_Email, Pk_User_Email, Verified, Campus_Permissions, Campus_Name, Email_Domain)
-VALUES ('campus@purduenw.edu', 'admin@purduenw.edu', TRUE, 'premium', 'Purdue University Northwest', 'purduenw.edu');
+INSERT INTO Campus (Pk_Campus_Email, Pk_User_Email, Verified, Campus_Permissions, Campus_Name, Campus_Short_Name, Campus_Description, Email_Domain)
+VALUES ('campus@purduenw.edu', 'admin@pnw.edu', TRUE, 'premium', 'Purdue University Northwest', 'PNW', 'Rooted in Northwest Indiana, Purdue University Northwest (PNW) is a student-centered university transforming lives with innovative education.', 'pnw.edu');
 
 -- Get the campus ID
 SET @campus_id = LAST_INSERT_ID();
