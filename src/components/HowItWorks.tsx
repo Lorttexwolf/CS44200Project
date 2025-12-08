@@ -17,25 +17,11 @@ const steps = [
     number: "01",
   },
   {
-    icon: faCalendarDays,
-    title: "Choose Your Spot",
-    description:
-      "Select the perfect spot based on price, distance, and availability.",
-    number: "02",
-  },
-  {
     icon: faLocationArrow,
     title: "Get Directions",
     description:
       "Navigate directly to your reserved spot with built-in GPS guidance.",
     number: "03",
-  },
-  {
-    icon: faCheckCircle,
-    title: "Park & Go",
-    description:
-      "Simply park and head to class. Payment is handled automatically.",
-    number: "04",
   },
 ];
 

@@ -1,6 +1,7 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faMapPin, faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import {faInstagram, faTwitter, faFacebook} from "@fortawesome/free-brands-svg-icons";
+import {UniParkLogoIm, UniParkLogoWh} from "@/app/Branding";
 
 import HorizontalWrap from "./HorizontalWrap";
 import Image from "next/image";
@@ -13,7 +14,7 @@ export default function Footer() {
                     {/* Logo and Description */}
                     <div className="md:col-span-1">
                         <div className="flex items-center gap-2 mb-4">
-                            <Image src="/logo-TRANSPARENT-White.png" alt="Logo" width={150} height={50}/>
+                            <Image src={UniParkLogoWh} alt="Logo" width={150} height={50}/>
                         </div>
                         <p className="text-sm text-gray-400">
                             Making campus parking simple, affordable, and stress-free for students

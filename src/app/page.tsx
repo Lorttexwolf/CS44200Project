@@ -5,7 +5,7 @@ import ParkingLots from "@/components/ParkingLots";
 import HowItWorks from "@/components/HowItWorks";
 import TeamGrid from "@/components/team/teamGrid";
 import HorizontalWrap from "@/components/HorizontalWrap";
-import CTA from "@/components/CTA";
+
 
 
 export default function App() {
@@ -23,7 +23,7 @@ export default function App() {
                 </HorizontalWrap>
             </section>
 
-            <CTA/>
+            
 
         </div>
     );

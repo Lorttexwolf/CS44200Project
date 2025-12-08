@@ -26,7 +26,7 @@ export default function Header() {
                     <Link href="/">
                         <div className="flex items-center gap-2">
                             <Image
-                                src="/logo-TRANSPARENT.png"
+                                src="/UniParkLogo.png"
                                 alt="Logo"
                                 width={150}
                                 height={50}/>

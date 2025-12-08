@@ -18,29 +18,12 @@ const features = [
     description:
       "See available spots in real-time across all campus parking lots and structures.",
   },
-  {
-    icon: faClock,
-    title: "Reserve in Advance",
-    description:
-      "Book your spot before you leave. Guarantee parking for important classes and events.",
-  },
-  {
-    icon: faDollarSign,
-    title: "Student Pricing",
-    description:
-      "Special rates for students with flexible daily, weekly, and semester passes.",
-  },
-  {
-    icon: faMobileScreenButton,
-    title: "Mobile First",
-    description:
-      "Find, reserve, and navigate to your spot all from your phone. Simple and fast.",
-  },
+
   {
     icon: faBell,
     title: "Smart Notifications",
     description:
-      "Get alerts when spots open up near your classes or when your reservation expires.",
+      "Get alerts when spots open up near your classes.",
   },
   {
     icon: faShieldHalved,
@@ -59,8 +42,8 @@ export default function Features() {
             Everything You Need to Park Smart
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Designed specifically for college students who need reliable,
-            affordable parking solutions.
+            Designed specifically for college students who need reliable and fast
+            parking solutions.
           </p>
         </div>
 
