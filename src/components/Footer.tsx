@@ -17,28 +17,9 @@ export default function Footer() {
                             <Image src={UniParkLogoWh} alt="Logo" width={150} height={50}/>
                         </div>
                         <p className="text-sm text-gray-400">
-                            Making campus parking simple, affordable, and stress-free for students
+                            Making campus parking simple and stress-free for students
                             everywhere.
                         </p>
-                    </div>
-
-                    {/* Product */}
-                    <div>
-                        <h4 className="text-white mb-4">Product</h4>
-                        <ul className="space-y-2 text-sm">
-                            <li>
-                                <a href="#" className="hover:text-white transition">Features</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-white transition">Pricing</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-white transition">Mobile App</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-white transition">Campus Map</a>
-                            </li>
-                        </ul>
                     </div>
 
                     {/* Company */}
@@ -49,13 +30,7 @@ export default function Footer() {
                                 <a href="#" className="hover:text-white transition">About Us</a>
                             </li>
                             <li>
-                                <a href="#" className="hover:text-white transition">Careers</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-white transition">Partner With Us</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-white transition">Contact</a>
+                                <a href="mailto:jluoliu@pnw.edu" className="hover:text-white transition">Contact</a>
                             </li>
                         </ul>
                     </div>
@@ -65,10 +40,7 @@ export default function Footer() {
                         <h4 className="text-white mb-4">Support</h4>
                         <ul className="space-y-2 text-sm">
                             <li>
-                                <a href="#" className="hover:text-white transition">Help Center</a>
-                            </li>
-                            <li>
-                                <a href="#" className="hover:text-white transition">Student Discount</a>
+                                <a href="mailto:jluoliu@pnw.edu" className="hover:text-white transition">Help Center</a>
                             </li>
                             <li>
                                 <a href="#" className="hover:text-white transition">Terms of Service</a>
@@ -84,20 +56,12 @@ export default function Footer() {
                 <div
                     className="pt-8 border-t border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
                     <p className="text-sm text-gray-400">
-                        © 2025 SpotFinder. All rights reserved.
+                        © 2025 UniPark. All rights reserved.
                     </p>
 
                     <div className="flex items-center gap-4">
-                        <a href="#" className="hover:text-white transition">
-                            <FontAwesomeIcon icon={faInstagram} className="size-5"/>
-                        </a>
-                        <a href="#" className="hover:text-white transition">
-                            <FontAwesomeIcon icon={faTwitter} className="size-5"/>
-                        </a>
-                        <a href="#" className="hover:text-white transition">
-                            <FontAwesomeIcon icon={faFacebook} className="size-5"/>
-                        </a>
-                        <a href="#" className="hover:text-white transition">
+
+                        <a href="mailto:jluoliu@pnw.edu" className="hover:text-white transition">
                             <FontAwesomeIcon icon={faEnvelope} className="size-5"/>
                         </a>
                     </div>

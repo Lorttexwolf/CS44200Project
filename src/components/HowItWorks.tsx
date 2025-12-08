@@ -21,7 +21,7 @@ const steps = [
     title: "Get Directions",
     description:
       "Navigate directly to your reserved spot with built-in GPS guidance.",
-    number: "03",
+    number: "02",
   },
 ];
 
@@ -62,15 +62,7 @@ export default function HowItWorks() {
           ))}
         </div>
 
-        {/* Footer */}
-        <div className="mt-16 text-center">
-          <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-sm">
-            <span className="text-gray-600">⏱️ Average booking time:</span>
-            <span className="text-blue-600 font-semibold">
-              Under 30 seconds
-            </span>
-          </div>
-        </div>
+
       </HorizontalWrap>
     </section>
   );
