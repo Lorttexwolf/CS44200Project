@@ -7,7 +7,6 @@ import Header from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-
 import ImageUpload from '@/components/ImageUpload';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -17,7 +16,9 @@ import {
   faParking,
   faMapMarkerAlt,
   faDollarSign,
-  faClock
+  faClock,
+  faPlus,
+  faTrash
 } from '@fortawesome/free-solid-svg-icons';
 
 interface ParkingLot {
@@ -33,15 +34,18 @@ interface ParkingLot {
   hourlyRate: string;
   lat: number;
   lng: number;
+  campusId?: number;
 }
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const { parkingLots, loading: lotsLoading, updateParkingLot, refetch } = useParkingLots(1);
+  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(1);
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [editMode, setEditMode] = useState(false);
+  const [createMode, setCreateMode] = useState(false);
   const [formData, setFormData] = useState<Partial<ParkingLot>>({});
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
@@ -49,7 +53,6 @@ export default function AdminPage() {
       window.location.href = '/login';
     }
     
-    // Redirect non-admin users
     if (!authLoading && user && user.servicePermissions !== 'admin' && user.servicePermissions !== 'campus_admin') {
       window.location.href = '/profile';
     }
@@ -59,51 +62,118 @@ export default function AdminPage() {
     setSelectedLot(lot);
     setFormData(lot);
     setEditMode(true);
+    setCreateMode(false);
     setMessage(null);
   };
 
   const handleCancel = () => {
     setSelectedLot(null);
     setEditMode(false);
+    setCreateMode(false);
     setFormData({});
     setMessage(null);
   };
 
-  const handleSave = async () => {
-    if (!selectedLot?.id) return;
+  const handleCreate = () => {
+    setCreateMode(true);
+    setEditMode(false);
+    setSelectedLot(null);
+    setFormData({
+      name: '',
+      address: '',
+      distance: '',
+      available: 0,
+      total: 0,
+      price: '',
+      hourlyRate: '',
+      image: '/placeholder-parking.jpg',
+      covered: false,
+      lat: 41.580083,
+      lng: -87.472973,
+      campusId: 1
+    });
+    setMessage(null);
+  };
 
+  const handleSave = async () => {
     setSaving(true);
     setMessage(null);
 
     try {
-      // If image was changed and old image was from uploads, delete it
-      if (formData.image && 
-          formData.image !== selectedLot.image && 
-          selectedLot.image.startsWith('/api/images/')) {
-        try {
-          await fetch('/api/images/delete', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageUrl: selectedLot.image }),
-          });
-        } catch (err) {
-          console.warn('Failed to delete old image:', err);
-          // Continue with update even if deletion fails
-        }
-      }
+      if (createMode) {
+        // Ensure campusId is set
+        const lotData = {
+          ...formData,
+          campusId: formData.campusId || 1
+        } as ParkingLot;
+        await createParkingLot(lotData);
+        setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
+      } else {
+        if (!selectedLot?.id) return;
 
-      await updateParkingLot(selectedLot.id, formData);
-      setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
+        if (formData.image && 
+            formData.image !== selectedLot.image && 
+            selectedLot.image.startsWith('/api/images/')) {
+          try {
+            await fetch('/api/images/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ imageUrl: selectedLot.image }),
+            });
+          } catch (err) {
+            console.warn('Failed to delete old image:', err);
+          }
+        }
+
+        await updateParkingLot(selectedLot.id, formData);
+        setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
+      }
+      
       setTimeout(() => {
         setEditMode(false);
+        setCreateMode(false);
         setSelectedLot(null);
         setFormData({});
         refetch();
       }, 1500);
     } catch (error) {
-      setMessage({ type: 'error', text: '✗ Failed to update parking lot' });
+      setMessage({ type: 'error', text: createMode ? '✗ Failed to create parking lot' : '✗ Failed to update parking lot' });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async (id: number, imageUrl: string) => {
+    if (!confirm('Are you sure you want to delete this parking lot? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeleting(id);
+    setMessage(null);
+
+    try {
+      await deleteParkingLot(id);
+
+      if (imageUrl.startsWith('/api/images/')) {
+        try {
+          await fetch('/api/images/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageUrl }),
+          });
+        } catch (err) {
+          console.warn('Failed to delete image:', err);
+        }
+      }
+
+      setMessage({ type: 'success', text: '✓ Parking lot deleted successfully!' });
+      setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+    } catch (error) {
+      setMessage({ type: 'error', text: '✗ Failed to delete parking lot' });
+    } finally {
+      setDeleting(null);
     }
   };
 
@@ -143,7 +213,6 @@ export default function AdminPage() {
     return null;
   }
 
-  // Check if user has admin permissions
   if (user.servicePermissions !== 'admin' && user.servicePermissions !== 'campus_admin') {
     return (
       <>
@@ -169,14 +238,13 @@ export default function AdminPage() {
       <Header />
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Header Section */}
           <div className="mb-12 text-center">
             <div className="inline-block mb-4">
               <div className="bg-blue-600 text-white rounded-full p-4 shadow-lg">
                 <FontAwesomeIcon icon={faParking} className="size-8" />
               </div>
             </div>
-            <h1 className="text-5xl font-bold text-gray-900 mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
             <p className="text-xl text-gray-600">Manage parking lot images and information</p>
@@ -188,9 +256,21 @@ export default function AdminPage() {
               <span>•</span>
               <span>Welcome, {user.firstName}!</span>
             </div>
+            
+            {!editMode && !createMode && (
+              <div className="mt-6">
+                <Button 
+                  onClick={handleCreate}
+                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-xl cursor-pointer transform hover:scale-105 transition-all"
+                  size="lg"
+                >
+                  <FontAwesomeIcon icon={faPlus} className="mr-2" />
+                  New Parking Lot
+                </Button>
+              </div>
+            )}
           </div>
 
-          {/* Success/Error Message */}
           {message && (
             <div
               className={`mb-8 p-4 rounded-xl shadow-lg animate-in slide-in-from-top duration-300 ${
@@ -203,14 +283,15 @@ export default function AdminPage() {
             </div>
           )}
 
-          {/* Edit Mode */}
-          {editMode && selectedLot ? (
+          {(editMode || createMode) ? (
             <Card className="mb-8 shadow-2xl border-2 border-blue-100 overflow-hidden">
-              <CardHeader className="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+              <CardHeader className={`bg-gradient-to-r ${createMode ? 'from-green-600 to-green-800' : 'from-blue-600 to-blue-800'} text-white`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <FontAwesomeIcon icon={faPencil} className="size-5" />
-                    <CardTitle className="text-2xl">Edit: {selectedLot.name}</CardTitle>
+                    <FontAwesomeIcon icon={createMode ? faPlus : faPencil} className="size-5" />
+                    <CardTitle className="text-2xl">
+                      {createMode ? 'Create New Parking Lot' : `Edit: ${selectedLot?.name}`}
+                    </CardTitle>
                   </div>
                   <Button 
                     variant="ghost" 
@@ -223,7 +304,6 @@ export default function AdminPage() {
                 </div>
               </CardHeader>
               <CardContent className="p-8 space-y-8">
-                {/* Basic Information */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <FontAwesomeIcon icon={faMapMarkerAlt} className="text-blue-600" />
@@ -240,7 +320,6 @@ export default function AdminPage() {
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Address
@@ -251,7 +330,6 @@ export default function AdminPage() {
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Distance from Campus
@@ -262,7 +340,6 @@ export default function AdminPage() {
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Type
@@ -279,7 +356,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Pricing */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <FontAwesomeIcon icon={faDollarSign} className="text-green-600" />
@@ -297,7 +373,6 @@ export default function AdminPage() {
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Hourly Rate
@@ -312,7 +387,6 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Availability */}
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <FontAwesomeIcon icon={faClock} className="text-purple-600" />
@@ -330,7 +404,6 @@ export default function AdminPage() {
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Available Spots
@@ -345,7 +418,39 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                {/* Image Upload */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <FontAwesomeIcon icon={faMapMarkerAlt} className="text-red-600" />
+                    Location Coordinates
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Latitude
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.000001"
+                        value={formData.lat || ''}
+                        onChange={(e) => setFormData({ ...formData, lat: parseFloat(e.target.value) })}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Longitude
+                      </label>
+                      <Input
+                        type="number"
+                        step="0.000001"
+                        value={formData.lng || ''}
+                        onChange={(e) => setFormData({ ...formData, lng: parseFloat(e.target.value) })}
+                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <h3 className="text-lg font-semibold text-gray-900 mb-4">
                     📸 Parking Lot Image
@@ -354,14 +459,13 @@ export default function AdminPage() {
                     currentImage={formData.image}
                     onUploadComplete={handleImageUpload}
                   />
-                  {formData.image && formData.image !== selectedLot.image && (
+                  {formData.image && selectedLot && formData.image !== selectedLot.image && (
                     <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-sm text-green-700 font-medium">✓ New image ready to save</p>
                     </div>
                   )}
                 </div>
 
-                {/* Action Buttons */}
                 <div className="flex gap-4 pt-6 border-t">
                   <Button 
                     onClick={handleSave} 
@@ -369,6 +473,8 @@ export default function AdminPage() {
                     className={`flex-1 ${
                       saving 
                         ? 'bg-gray-400 cursor-not-allowed pointer-events-none' 
+                        : createMode
+                        ? 'bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 cursor-pointer'
                         : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
                     } text-white shadow-lg transition-all`}
                     size="lg"
@@ -376,12 +482,12 @@ export default function AdminPage() {
                     {saving ? (
                       <>
                         <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                        Applying Changes...
+                        {createMode ? 'Creating...' : 'Applying Changes...'}
                       </>
                     ) : (
                       <>
-                        <FontAwesomeIcon icon={faCheck} className="mr-2" />
-                        Save Changes
+                        <FontAwesomeIcon icon={createMode ? faPlus : faCheck} className="mr-2" />
+                        {createMode ? 'Create Parking Lot' : 'Save Changes'}
                       </>
                     )}
                   </Button>
@@ -401,7 +507,6 @@ export default function AdminPage() {
               </CardContent>
             </Card>
           ) : (
-            /* Grid View */
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {parkingLots.map((lot) => {
                 const badge = getAvailabilityBadge(lot.available, lot.total);
@@ -447,18 +552,37 @@ export default function AdminPage() {
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t">
+                      <div className="flex items-center justify-between gap-3 pt-4 border-t">
                         <div>
                           <p className="text-lg font-bold text-gray-900">{lot.price}</p>
                           <p className="text-sm text-gray-500">{lot.hourlyRate}</p>
                         </div>
-                        <Button 
-                          onClick={() => handleEdit(lot)} 
-                          className="bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer"
-                        >
-                          <FontAwesomeIcon icon={faPencil} className="mr-2" />
-                          Edit
-                        </Button>
+                        <div className="flex gap-2">
+                          <Button 
+                            onClick={() => handleEdit(lot)} 
+                            className="bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer"
+                            size="sm"
+                          >
+                            <FontAwesomeIcon icon={faPencil} className="mr-2" />
+                            Edit
+                          </Button>
+                          <Button 
+                            onClick={() => lot.id && handleDelete(lot.id, lot.image)}
+                            disabled={deleting === lot.id}
+                            className={`${
+                              deleting === lot.id
+                                ? 'bg-gray-400 cursor-not-allowed pointer-events-none'
+                                : 'bg-red-600 hover:bg-red-700 cursor-pointer'
+                            } shadow-md`}
+                            size="sm"
+                          >
+                            {deleting === lot.id ? (
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            ) : (
+                              <FontAwesomeIcon icon={faTrash} />
+                            )}
+                          </Button>
+                        </div>
                       </div>
                     </CardContent>
                   </Card>
