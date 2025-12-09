@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Link from "next/link";
 
 import { useParkingLots } from "@/hooks/useParkingLots";
+import { useGoogleMapsDirections } from "@/hooks/useMap";
 import { Campus } from "@/models/Campus";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import HorizontalWrap from "./HorizontalWrap";
@@ -16,6 +17,7 @@ import { Card, CardContent, CardHeader } from "./ui/card";
 export default function ParkingLots({ campusID, campusShortName }: { campusID: Campus["ID"], campusShortName: string }) {
   // Fetch parking lots from database (campusId = 1)
   const { parkingLots, loading, error } = useParkingLots(campusID);
+  const getDirectionsUrl = useGoogleMapsDirections();
   
   // Get 3 most popular (lowest availability percentage)
   const topLots = [...parkingLots]
@@ -169,7 +171,16 @@ export default function ParkingLots({ campusID, campusShortName }: { campusID: C
                     </div>
                   </div>
 
-
+                  <div className="pt-4 border-t">
+                    <a 
+                      href={getDirectionsUrl(lot.Latitude, lot.Longitude)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block w-full bg-blue-600 hover:bg-blue-700 text-white text-center py-2 px-4 rounded font-medium text-sm transition-colors"
+                    >
+                      Get Directions
+                    </a>
+                  </div>
                 </CardContent>
               </Card>
             );

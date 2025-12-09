@@ -2,6 +2,7 @@
 
 import { useCampus } from '@/hooks/useCampuses';
 import { useParkingLots } from '@/hooks/useParkingLots';
+import { useGoogleMapsDirections } from '@/hooks/useMap';
 import { ParkingLot } from '@/models/ParkingLot';
 import 'leaflet/dist/leaflet.css';
 import dynamic from 'next/dynamic';
@@ -23,6 +24,7 @@ export default function CampusMapPage({ params }: { params: Promise<{ campus: st
 
     const { campus, loading: campusLoading } = useCampus(campusParam);
     const { parkingLots, loading: lotsLoading, error } = useParkingLots(campus?.ID || 0);
+    const getDirectionsUrl = useGoogleMapsDirections();
 
     useEffect(() => {
         setIsMounted(true);
@@ -180,6 +182,17 @@ export default function CampusMapPage({ params }: { params: Promise<{ campus: st
                                         ))}
                                     </div>
                                 )}
+
+                                <div className="mt-3 pt-3 border-t">
+                                    <Link
+                                        href={getDirectionsUrl(lot.Latitude, lot.Longitude)}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="block w-full text-center py-2 px-4 rounded font-medium text-sm transition-colors"
+                                    >
+                                        Get Directions
+                                    </Link>
+                                </div>
                             </div>
                         </Popup>
                     </Marker>

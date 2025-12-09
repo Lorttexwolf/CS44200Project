@@ -1,9 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMagnifyingGlass,
-  faCalendarDays,
   faLocationArrow,
-  faCheckCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import HorizontalWrap from "./HorizontalWrap";
