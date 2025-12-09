@@ -445,8 +445,8 @@ export default function AdminPage() {
                       saving 
                         ? 'bg-gray-400 cursor-not-allowed pointer-events-none' 
                         : createMode
-                        ? 'bg-linear-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 cursor-pointer'
-                        : 'bg-linear-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
+                        ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                        : 'bg-linear-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
                     } text-white shadow-lg transition-all`}
                     size="lg"
                   >
