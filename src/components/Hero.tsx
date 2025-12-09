@@ -1,14 +1,13 @@
 'use client';
 
-import {useState, useEffect} from "react";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faMagnifyingGlass} from "@fortawesome/free-solid-svg-icons";
-import {parkHero} from "../Branding";
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState } from "react";
 
-import {Input} from "./ui/input";
+import { Input } from "./ui/input";
 
-import {useParkingLots} from "@/hooks/useParkingLots";
-import {RotatingText} from "./ui/shadcn-io/rotating-text";
+import { useParkingLots } from "@/hooks/useParkingLots";
+import { RotatingText } from "./ui/shadcn-io/rotating-text";
 
 export default function Hero() {
     const [searchQuery,
@@ -17,10 +16,9 @@ export default function Hero() {
         setShowPreview] = useState(false);
     const {parkingLots, loading} = useParkingLots(1);
 
+    console.log(parkingLots);
 
-
-
-    const filteredLots = parkingLots.filter(lot => lot.name.toLowerCase().includes(searchQuery.toLowerCase()) || lot.address.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
+    const filteredLots = parkingLots.filter(lot => lot.Name.toLowerCase().includes(searchQuery.toLowerCase()) || lot.Address.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
     const handleSearch = () => {
         if (searchQuery.trim()) {
@@ -98,7 +96,7 @@ export default function Hero() {
                                     ? (
                                         <div className="divide-y">
                                             {filteredLots.map((lot, index) => {
-                                                const availablePercentage = (lot.available / lot.total) * 100;
+                                                const availablePercentage = (lot.AvailableSpots / lot.TotalSpots) * 100;
                                                 const statusColor = availablePercentage > 30
                                                     ? 'text-green-600'
                                                     : availablePercentage > 10
@@ -112,16 +110,16 @@ export default function Hero() {
                                                         onClick={() => window.location.href = '/map'}>
                                                         <div className="flex items-center justify-between">
                                                             <div className="flex-1">
-                                                                <h4 className="font-semibold text-gray-900 text-left">{lot.name}</h4>
-                                                                <p className="text-sm text-gray-500 text-left">{lot.address}</p>
+                                                                <h4 className="font-semibold text-gray-900 text-left">{lot.Name}</h4>
+                                                                <p className="text-sm text-gray-500 text-left">{lot.Address}</p>
                                                             </div>
                                                             <div className="text-right ml-4">
                                                                 <p className={`font-bold ${statusColor}`}>
-                                                                    {lot.available}
+                                                                    {lot.AvailableSpots}
                                                                     spots
                                                                 </p>
                                                                 <p className="text-xs text-gray-500">
-                                                                    of {lot.total}
+                                                                    of {lot.TotalSpots}
                                                                     total
                                                                 </p>
                                                             </div>

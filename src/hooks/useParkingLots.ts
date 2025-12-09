@@ -1,31 +1,5 @@
-import { useState, useEffect } from 'react';
-
-interface ParkingFloor {
-  floorNumber: number;
-  floorName: string;
-  available: number;
-  total: number;
-  features?: string[];
-}
-
-interface ParkingLot {
-  id?: number;
-  name: string;
-  address: string;
-  distance: string;
-  available: number;
-  total: number;
-  price: string;
-  hourlyRate: string;
-  image: string;
-  covered: boolean;
-  lat: number;
-  lng: number;
-  campusId?: number;
-  hasMultipleFloors?: boolean;
-  floors?: ParkingFloor[];
-  features?: string[];
-}
+import { ParkingLot } from '@/models/ParkingLot';
+import { useEffect, useState } from 'react';
 
 export function useParkingLots(campusId: number) {
   const [parkingLots, setParkingLots] = useState<ParkingLot[]>([]);

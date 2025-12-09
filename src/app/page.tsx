@@ -21,8 +21,6 @@ export default function App() {
                 </HorizontalWrap>
             </section>
 
-            
-
         </div>
     );
 }

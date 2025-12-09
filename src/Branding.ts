@@ -10,6 +10,3 @@ export const UniParkLogoI: StaticImageData = UniParkLogo;
 
 import UniParkLogoWhite from '../public/UniParkLogoWhite.png';
 export const UniParkLogoWh: StaticImageData = UniParkLogoWhite;
-
-import parkHero from '../public/park.png';
-export const parkHero: StaticImageData = parkHero;
