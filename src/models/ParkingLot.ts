@@ -6,7 +6,7 @@ export const ParkingLotSchema = z.object({
     ID: z.number(),
     Name: z.string(),
     Address: z.string(),
-    Image_URL: z.url().optional().nullable(),
+    ImageFileName: z.string().optional().nullable(),
     Latitude: z.coerce.number(),
     Longitude: z.coerce.number(),
     CreatedAt: z.date(),

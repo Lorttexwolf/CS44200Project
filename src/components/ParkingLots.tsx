@@ -121,11 +121,11 @@ export default function ParkingLots({ campusID, campusShortName }: { campusID: C
             return (
               <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative h-48">
-                  <ImageWithFallback
-                    src={lot.Image_URL || ''}
+                  {lot.ImageFileName && <ImageWithFallback
+                    src={`/api/images/${lot.ImageFileName}`}
                     alt={lot.Name}
                     className="w-full h-full object-cover"
-                  />
+                  />}
                   <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold shadow-lg ${badge.color}`}>
                     {badge.text}
                   </span>
