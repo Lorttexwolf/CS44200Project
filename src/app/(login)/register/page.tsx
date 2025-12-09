@@ -6,8 +6,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
+
 
 export default function RegisterPage() {
     const [formData, setFormData] = useState({
@@ -72,7 +71,7 @@ export default function RegisterPage() {
 
     return (
         <>
-            <Header />
+          
             <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" style={{ marginTop: '72px' }}>
                 <div className="max-w-md w-full space-y-8">
                     <div>
@@ -217,7 +216,7 @@ export default function RegisterPage() {
                     )}
                 </div>
             </div>
-            <Footer />
+        
         </>
     );
 }

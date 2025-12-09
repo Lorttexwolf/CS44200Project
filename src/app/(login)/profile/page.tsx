@@ -4,8 +4,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import Link from 'next/link';
 
 export default function ProfilePage() {
@@ -26,11 +24,11 @@ export default function ProfilePage() {
     if (loading) {
         return (
             <>
-                <Header />
+                
                 <div className="min-h-screen flex items-center justify-center" style={{ marginTop: '72px' }}>
                     <div className="text-xl text-gray-600">Loading...</div>
                 </div>
-                <Footer />
+                
             </>
         );
     }
@@ -41,12 +39,12 @@ export default function ProfilePage() {
 
     return (
         <>
-            <Header />
+
             <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8" style={{ marginTop: '72px' }}>
                 <div className="max-w-4xl mx-auto">
                     {/* Profile Header */}
                     <div className="bg-white shadow rounded-lg overflow-hidden">
-                        <div className="bg-gradient-to-r from-blue-500 to-blue-600 px-6 py-8">
+                        <div className="bg-linear-to-r from-blue-500 to-blue-600 px-6 py-8">
                             <div className="flex items-center justify-between">
                                 <div>
                                     <h1 className="text-3xl font-bold text-white">
@@ -116,7 +114,7 @@ export default function ProfilePage() {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 {(user.servicePermissions === 'admin' || user.servicePermissions === 'campus_admin') && (
                                     <Link href="/admin">
-                                        <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white cursor-pointer">
+                                        <Button className="w-full bg-linear-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white cursor-pointer">
                                             🔧 Admin Dashboard
                                         </Button>
                                     </Link>
@@ -169,7 +167,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-            <Footer />
+
         </>
     );
 }
