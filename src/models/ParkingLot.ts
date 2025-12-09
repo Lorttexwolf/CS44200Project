@@ -11,7 +11,6 @@ export const ParkingLotSchema = z.object({
     Longitude: z.number(),
     CreatedAt: z.date(),
 
-    Features: z.string().array(),
     Floors: ParkingFloorSchema.array(),
 
     // TotalSpots & AvailableSpots is computed by Floors ^

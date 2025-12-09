@@ -1,5 +1,6 @@
 import ParkingLots from "@/components/ParkingLots";
 import { queryCampusByName } from "@/models/CampusServe";
+import { redirect } from "next/navigation";
 
 export default async function Campus({ params }: { params: Promise<{ campus: string }> }) {
     console.log("Hello?");
@@ -10,7 +11,7 @@ export default async function Campus({ params }: { params: Promise<{ campus: str
 
     const campus = await queryCampusByName(campusShortName);
 
-    if (!campus) return "BLEHHH"; // Redirect to 404?
+    if (!campus) redirect("/");
 
     return <>
 

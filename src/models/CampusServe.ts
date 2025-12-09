@@ -16,7 +16,7 @@ export async function queryCampusByName(name: string)
         Name: rawCampus.Campus_Name,
         ShortName: rawCampus.Campus_Short_Name,
         Description: rawCampus.Campus_Description,
-        Domain: rawCampus.Email_Domain,
+        Domain: rawCampus.Domain,
         IconURL: rawCampus.Icon_URL,
         VideoURL: rawCampus.Video_URL
 

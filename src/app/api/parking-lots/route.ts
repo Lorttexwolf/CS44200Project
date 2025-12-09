@@ -1,5 +1,6 @@
+import { createParkingLot } from '@/lib/parkingLotService';
+import { queryParkingLotsOfCampus } from '@/models/ParkingLotServe';
 import { NextRequest, NextResponse } from 'next/server';
-import { getParkingLots, createParkingLot } from '@/lib/parkingLotService';
 
 // GET all parking lots for a campus
 export async function GET(request: NextRequest) {
@@ -14,7 +15,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const lots = await getParkingLots(parseInt(campusId));
+    const lots = await queryParkingLotsOfCampus(parseInt(campusId));
     return NextResponse.json(lots);
   } catch (error) {
     console.error('Error fetching parking lots:', error);
