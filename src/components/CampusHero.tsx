@@ -2,8 +2,8 @@
 
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
 import Link from "next/link";
+import { useState } from "react";
 
 import { Input } from "./ui/input";
 
@@ -32,7 +32,7 @@ export default function CampusHero({ videoURL }: CampusHeroProps) {
     };
 
     return (
-        <section className="relative min-h-screen flex items-center justify-center pt-16">
+        <section className="relative min-h-[92vh] flex items-center justify-center pt-16">
             {/* Background video */}
             <div className="absolute inset-0 z-10">
                 <video
@@ -124,10 +124,10 @@ export default function CampusHero({ videoURL }: CampusHeroProps) {
                         </div>
                     )}
                 </div>
-                <div id="features" />
-                <p className="text-sm text-gray-200">
+
+                {/* <p className="text-sm text-gray-200">
                     🎓 Trusted by students across multiple universities
-                </p>
+                </p> */}
             </div>
         </section>
     );

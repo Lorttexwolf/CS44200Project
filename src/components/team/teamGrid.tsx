@@ -1,16 +1,10 @@
 
 
-import { Card,CardContent } from "../ui/card";
 import { ImageWithFallback } from "../figma/ImageWithFallback";
+import { Card, CardContent } from "../ui/card";
 
 const team = [
-  {
-    name: "Aaron Jung",
-    role: "Full Stack Developer",
-    image: "/team/Aaron.jpg",
-    bio: "PNW3D.com founder and CS major"
-  },
-  {
+    {
     name: "Jih Bin Luo",
     role: "Full Stack Developer",
     image: "/team/Jih.jpg",
@@ -21,6 +15,12 @@ const team = [
     role: "BackEnd Developer",
     image: "/team/Justin.jpg",
     bio: "CS student focused on scalable backend systems"
+  },
+  {
+    name: "Aaron Jung",
+    role: "Full Stack Developer",
+    image: "/team/Aaron.png",
+    bio: "PNW CS Student"
   },
   {
     name: "Isabella Sosa",
@@ -37,14 +37,14 @@ export default function TeamGrid() {
         <h2 className="text-gray-900 mb-4 text-3xl">
           Meet the Team
         </h2>
-        <p className="text-xl text-gray-600 max-w-xl mx-auto">
-          Built by students, for students. We understand the parking struggle.
+        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          Built by students who know the parking challenges firsthand.
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
         {team.map((member, index) => (
-          <Card key={index} className="text-center border-0 shadow-sm hover:shadow-md transition-shadow bg-white">
+          <Card key={index} className="text-center hover:shadow-md transition-shadow bg-gray-50">
             <CardContent className="p-6">
               <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
                 <ImageWithFallback

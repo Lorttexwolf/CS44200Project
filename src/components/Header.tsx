@@ -1,12 +1,12 @@
 "use client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useAuth } from "@/hooks/useAuth";
 import { faBars, faXmark } from "@fortawesome/free-solid-svg-icons";
-import { useState } from "react";
-import { Button } from "./ui/button";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 import { UniParkLogoI } from "../Branding";
+import { Button } from "./ui/button";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -42,12 +42,12 @@ export default function Header() {
             >
               Features
             </Link>
-            <Link
+            {/* <Link
               href="/#how-it-works"
               className="text-gray-600 hover:text-gray-900 transition"
             >
               How It Works
-            </Link>
+            </Link> */}
             <Link
               href="/#team"
               className="text-gray-600 hover:text-gray-900 transition"

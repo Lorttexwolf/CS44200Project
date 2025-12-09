@@ -20,13 +20,13 @@ export default function ParkingLots({ campusID, campusShortName }: { campusID: C
   // Get 3 most popular (lowest availability percentage)
   const topLots = [...parkingLots]
     .sort((a, b) => (a.AvailableSpots / a.TotalSpots) - (b.AvailableSpots / b.TotalSpots))
-    .slice(0, 3);
+    .slice(0, Math.min(parkingLots.length, 6));
 
   const getAvailabilityColor = (available: number, total: number) => {
     const percentage = (available / total) * 100;
     if (percentage > 30) return "bg-green-500";
     if (percentage > 10) return "bg-yellow-500";
-    return "bg-red-500";
+    return "bg-red-500"
   };
 
   const getAvailabilityBadge = (available: number, total: number) => {
