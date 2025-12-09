@@ -13,6 +13,7 @@ const MapContainer = dynamic(() => import('react-leaflet').then((mod) => mod.Map
 const TileLayer = dynamic(() => import('react-leaflet').then((mod) => mod.TileLayer), { ssr: false });
 const Marker = dynamic(() => import('react-leaflet').then((mod) => mod.Marker), { ssr: false });
 const Popup = dynamic(() => import('react-leaflet').then((mod) => mod.Popup), { ssr: false });
+const ZoomControl = dynamic(() => import('react-leaflet').then((mod) => mod.ZoomControl), { ssr: false });
 
 export default function CampusMapPage({ params }: { params: Promise<{ campus: string }> }) {
     const { campus: campusParam } = use(params);
@@ -50,12 +51,6 @@ export default function CampusMapPage({ params }: { params: Promise<{ campus: st
         return "bg-red-500";
     };
 
-    const getAvailabilityBadge = (available: number, total: number) => {
-        const percentage = (available / total) * 100;
-        if (percentage > 30) return { variant: "default" as const, text: "Available" };
-        if (percentage > 10) return { variant: "secondary" as const, text: "Limited" };
-        return { variant: "destructive" as const, text: "Almost Full" };
-    };
 
     if (campusLoading || !campus) {
         return (
@@ -89,14 +84,15 @@ export default function CampusMapPage({ params }: { params: Promise<{ campus: st
         : [41.580083, -87.472973];
 
     return (
-        <div className="w-full" style={{ height: 'calc(100vh - 72px)' }}>
+        <div className="w-full relative" style={{ height: 'calc(100vh - 72px)' }}>
             {/* Back to Campus Link */}
-            <div className="absolute top-20 left-4 z-1000">
+            <div className="absolute top-6 Left-6 z-40 p-3">
                 <Link 
                     href={`/${campusParam}`}
-                    className="bg-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+                    className="bg-white px-4 py-2 rounded-lg shadow-lg hover:shadow-xl transition-shadow flex items-center gap-2"
                 >
-                    ← Back to {campus?.Name || 'Campus'}
+                    <span>←</span>
+                    <span>Back to {campus?.Name || 'Campus'}</span>
                 </Link>
             </div>
 
@@ -105,10 +101,13 @@ export default function CampusMapPage({ params }: { params: Promise<{ campus: st
                 zoom={16}
                 style={{
                     height: '100%',
-                    width: '100%'
+                    width: '100%',
+                    zIndex: 0
                 }}
                 scrollWheelZoom={true}
+                zoomControl={false}
             >
+                <ZoomControl position="bottomleft" />
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -125,6 +124,15 @@ export default function CampusMapPage({ params }: { params: Promise<{ campus: st
                         <Popup>
                             <div className="p-2 min-w-[250px]">
                                 <h3 className="font-bold text-lg mb-2">{lot.Name}</h3>
+                                {lot.ImageFileName && (
+                                    <div className="mb-3">
+                                        <img 
+                                            src={`/api/images/${lot.ImageFileName}`}
+                                            alt={lot.Name}
+                                            className="w-full h-32 object-cover rounded"
+                                        />
+                                    </div>
+                                )}
                                 <p className="text-sm text-gray-600 mb-3">{lot.Address}</p>
 
                                 <div className="mb-3">
