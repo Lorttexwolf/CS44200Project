@@ -1,7 +1,7 @@
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faMapPin, faEnvelope} from "@fortawesome/free-solid-svg-icons";
 import {faInstagram, faTwitter, faFacebook} from "@fortawesome/free-brands-svg-icons";
-import {UniParkLogoIm, UniParkLogoWh} from "@/app/Branding";
+import {UniParkLogoWh} from "../Branding";
 
 import HorizontalWrap from "./HorizontalWrap";
 import Image from "next/image";

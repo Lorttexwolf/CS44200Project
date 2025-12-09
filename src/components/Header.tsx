@@ -6,6 +6,7 @@ import {Button} from "./ui/button";
 import Image from "next/image";
 import Link from "next/link";
 import {useAuth} from "@/hooks/useAuth";
+import {UniParkLogoI} from "../Branding";
 
 export default function Header() {
     const [isMenuOpen,
@@ -26,7 +27,7 @@ export default function Header() {
                     <Link href="/">
                         <div className="flex items-center gap-2">
                             <Image
-                                src="/UniParkLogo.png"
+                                src={UniParkLogoI}
                                 alt="Logo"
                                 width={150}
                                 height={50}/>
