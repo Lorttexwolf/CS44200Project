@@ -27,7 +27,7 @@ const steps = [
 
 export default function HowItWorks() {
   return (
-    <section id="how-it-works" className="py-20 bg-blue-50">
+    <section className="py-20 bg-blue-50">
       <HorizontalWrap>
         {/* Header */}
         <div className="text-center mb-16">
@@ -60,6 +60,7 @@ export default function HowItWorks() {
               <p className="text-gray-600">{step.description}</p>
             </div>
           ))}
+          <div id="campuses" />
         </div>
 
 

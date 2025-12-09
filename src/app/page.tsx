@@ -9,12 +9,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-white">
       <CampusHero videoURL="/mainVid.mp4" />
+      
       <Features />
       <HowItWorks />
-      <section id="campuses">
+
         <CampusSelection />
-      </section>
-      <section id="team" className="bg-white">
+
+      <section className="bg-white">
         <HorizontalWrap>
           <TeamGrid />
         </HorizontalWrap>

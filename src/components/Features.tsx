@@ -32,7 +32,7 @@ const features = [
 
 export default function Features() {
   return (
-    <section id="features" className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50">
       <HorizontalWrap>
         <div className="text-center mb-16">
           <h2 className="text-gray-900 mb-4 text-3xl font-bold">
@@ -43,6 +43,7 @@ export default function Features() {
             parking solutions.
           </p>
         </div>
+        
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
@@ -63,7 +64,9 @@ export default function Features() {
                 <p className="text-gray-600">{feature.description}</p>
               </CardContent>
             </Card>
+            
           ))}
+          <div id="how-it-works" />
         </div>
       </HorizontalWrap>
     </section>
