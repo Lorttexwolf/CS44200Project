@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
+import { useCampuses } from '@/hooks/useCampuses';
 import { useParkingLots } from '@/hooks/useParkingLots';
 import { ParkingLot, CreateParkingLot } from '@/models/ParkingLot';
 import {
@@ -24,7 +25,9 @@ import { useEffect, useState } from 'react';
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(1);
+  const { campuses, loading: campusesLoading } = useCampuses();
+  const [selectedCampusId, setSelectedCampusId] = useState<number>(1);
+  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(selectedCampusId);
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
@@ -72,7 +75,7 @@ export default function AdminPage() {
       ImageFileName: '/placeholder-parking.jpg',
       Latitude: 41.580083,
       Longitude: -87.472973,
-      CampusID: 1
+      CampusID: selectedCampusId
     });
     setMessage(null);
   };
@@ -268,10 +271,29 @@ export default function AdminPage() {
                 <FontAwesomeIcon icon={faParking} className="size-8" />
               </div>
             </div>
-            <h1 className="text-5xl font-bold mb-3 bg-linear-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
             <p className="text-xl text-gray-600">Manage parking lot images and information</p>
+            
+            {/* Campus Selector */}
+            {!editMode && !createMode && campuses.length > 0 && (
+              <div className="mt-6 flex items-center justify-center gap-3">
+                <label className="text-sm font-medium text-gray-700">Campus:</label>
+                <select
+                  value={selectedCampusId}
+                  onChange={(e) => setSelectedCampusId(Number(e.target.value))}
+                  className="px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all cursor-pointer"
+                >
+                  {campuses.map((campus) => (
+                    <option key={campus.ID} value={campus.ID}>
+                      {campus.Name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+            
             <div className="mt-4 flex items-center justify-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>

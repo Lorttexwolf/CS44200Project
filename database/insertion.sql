@@ -10,12 +10,19 @@ USE PNWPARKING;
 -- SET SQL_SAFE_UPDATES = 1;
 
 INSERT INTO Account (Account_Email, Verified, First_Name, Last_Name, Service_Permissions, Password)
-VALUES ('admin@pnw.edu', TRUE, 'Admin', 'User', 'admin', '123456789');
+VALUES 
+('admin@pnw.edu', TRUE, 'Admin', 'User', 'admin', '123456789'),
+('aaron.jung@pnw.edu', TRUE, 'Aaron', 'Jung', 'admin', '123456789');
 
 INSERT INTO Campus (Campus_Name, Campus_Short_Name, Campus_Description, Domain, Icon_URL, Video_URL)
 VALUES ('Purdue University Northwest', 'PNW', 'Rooted in Northwest Indiana, Purdue University Northwest (PNW) is a student-centered university transforming lives with innovative education.', 'pnw.edu', "https://www.pnw.edu/marketing-communications/wp-content/uploads/sites/9/2020/03/PNW_-V_WG-01_264x116.jpg", "https://www.pnw.edu/wp-content/uploads/2025/01/PNW_Website-Header-B_ELQ3.mp4");
 
 SET @pnw_campus_id = LAST_INSERT_ID();
+
+-- Insert Campus Users
+INSERT INTO CampusUser (Fk_User_Email, Fk_Campus_ID, Verified, Campus_Permissions) VALUES
+('admin@pnw.edu', @pnw_campus_id, TRUE, 'admin'),
+('aaron.jung@pnw.edu', @pnw_campus_id, TRUE, 'admin');
 
 -- Insert Parking Lots
 INSERT INTO ParkingLot (Pk_Campus_ID, Lot_Name, Address, Latitude, Longitude, ImageFileName) VALUES
