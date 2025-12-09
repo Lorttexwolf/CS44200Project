@@ -79,12 +79,14 @@ export function useParkingLots(campusId: number) {
         method: 'DELETE',
       });
 
+      console.log(response);
+
       if (!response.ok) {
         throw new Error('Failed to delete parking lot');
       }
 
       await fetchParkingLots(); // Refresh the list
-      return await response.json();
+      
     } catch (err) {
       throw err;
     }

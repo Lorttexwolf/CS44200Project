@@ -12,7 +12,6 @@ import { ParkingLot } from '@/models/ParkingLot';
 import {
   faCheck,
   faClock,
-  faDollarSign,
   faMapMarkerAlt,
   faParking,
   faPencil,
@@ -81,6 +80,8 @@ export default function AdminPage() {
     setSaving(true);
     setMessage(null);
 
+    console.log("Saving....");
+
     try {
       if (createMode) {
         // Ensure campusId is set
@@ -90,25 +91,26 @@ export default function AdminPage() {
         } as ParkingLot;
         await createParkingLot(lotData);
         setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
-      } else {
-        if (!selectedLot?.id) return;
 
-        if (formData.image && 
-            formData.image !== selectedLot.image && 
-            selectedLot.image.startsWith('/api/images/')) {
+      } else {
+
+        if (!selectedLot?.ID) return;
+
+        if (formData?.ImageFileName && selectedLot?.ImageFileName && formData?.ImageFileName !== selectedLot?.ImageFileName) {
           try {
             await fetch('/api/images/delete', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ imageUrl: selectedLot.image }),
+              body: JSON.stringify({ imageUrl: selectedLot.ImageFileName }),
             });
           } catch (err) {
             console.warn('Failed to delete old image:', err);
           }
         }
 
-        await updateParkingLot(selectedLot.id, formData);
+        await updateParkingLot(selectedLot.ID, formData);
         setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
+
       }
       
       setTimeout(() => {
@@ -125,7 +127,8 @@ export default function AdminPage() {
     }
   };
 
-  const handleDelete = async (id: number, imageUrl: string) => {
+  const handleDelete = async (id: number, imageUrl?: string) => {
+
     if (!confirm('Are you sure you want to delete this parking lot? This action cannot be undone.')) {
       return;
     }
@@ -153,7 +156,8 @@ export default function AdminPage() {
         setMessage(null);
       }, 3000);
     } catch (error) {
-      setMessage({ type: 'error', text: '✗ Failed to delete parking lot' });
+      console.log(error);
+      setMessage({ type: 'error', text: `✗ ${error}` });
     } finally {
       setDeleting(null);
     }
@@ -272,7 +276,7 @@ export default function AdminPage() {
                   <div className="flex items-center gap-3">
                     <FontAwesomeIcon icon={createMode ? faPlus : faPencil} className="size-5" />
                     <CardTitle className="text-2xl">
-                      {createMode ? 'Create New Parking Lot' : `Edit: ${selectedLot?.name}`}
+                      {createMode ? 'Create New Parking Lot' : `Edit: ${selectedLot?.Name}`}
                     </CardTitle>
                   </div>
                   <Button 
@@ -297,8 +301,8 @@ export default function AdminPage() {
                         Parking Lot Name
                       </label>
                       <Input
-                        value={formData.name || ''}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        value={formData?.Name || ''}
+                        onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -307,62 +311,8 @@ export default function AdminPage() {
                         Address
                       </label>
                       <Input
-                        value={formData.address || ''}
-                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Distance from Campus
-                      </label>
-                      <Input
-                        value={formData.distance || ''}
-                        onChange={(e) => setFormData({ ...formData, distance: e.target.value })}
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Type
-                      </label>
-                      <select
-                        value={formData.covered ? 'true' : 'false'}
-                        onChange={(e) => setFormData({ ...formData, covered: e.target.value === 'true' })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring-blue-500"
-                      >
-                        <option value="false">🌤️ Open Air</option>
-                        <option value="true">🏢 Covered</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <FontAwesomeIcon icon={faDollarSign} className="text-green-600" />
-                    Pricing
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Daily Rate
-                      </label>
-                      <Input
-                        value={formData.price || ''}
-                        onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                        placeholder="$5/day"
-                        className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Hourly Rate
-                      </label>
-                      <Input
-                        value={formData.hourlyRate || ''}
-                        onChange={(e) => setFormData({ ...formData, hourlyRate: e.target.value })}
-                        placeholder="$2/hour"
+                        value={formData?.Address || ''}
+                        onChange={(e) => setFormData({ ...formData, Address: e.target.value })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -381,8 +331,8 @@ export default function AdminPage() {
                       </label>
                       <Input
                         type="number"
-                        value={formData.total || ''}
-                        onChange={(e) => setFormData({ ...formData, total: parseInt(e.target.value) })}
+                        value={formData?.TotalSpots || ''}
+                        onChange={(e) => setFormData({ ...formData, TotalSpots: parseInt(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -392,8 +342,8 @@ export default function AdminPage() {
                       </label>
                       <Input
                         type="number"
-                        value={formData.available || ''}
-                        onChange={(e) => setFormData({ ...formData, available: parseInt(e.target.value) })}
+                        value={formData?.AvailableSpots || ''}
+                        onChange={(e) => setFormData({ ...formData, AvailableSpots: parseInt(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -413,8 +363,8 @@ export default function AdminPage() {
                       <Input
                         type="number"
                         step="0.000001"
-                        value={formData.lat || ''}
-                        onChange={(e) => setFormData({ ...formData, lat: parseFloat(e.target.value) })}
+                        value={formData?.Latitude || ''}
+                        onChange={(e) => setFormData({ ...formData, Latitude: parseFloat(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -425,8 +375,8 @@ export default function AdminPage() {
                       <Input
                         type="number"
                         step="0.000001"
-                        value={formData.lng || ''}
-                        onChange={(e) => setFormData({ ...formData, lng: parseFloat(e.target.value) })}
+                        value={formData?.Longitude || ''}
+                        onChange={(e) => setFormData({ ...formData, Longitude: parseFloat(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -438,10 +388,10 @@ export default function AdminPage() {
                     📸 Parking Lot Image
                   </h3>
                   <ImageUpload
-                    currentImage={formData.image}
+                    currentImage={formData?.ImageFileName ? `/api/images/${formData?.ImageFileName}` : undefined}
                     onUploadComplete={handleImageUpload}
                   />
-                  {formData.image && selectedLot && formData.image !== selectedLot.image && (
+                  {formData?.ImageFileName && selectedLot && formData?.ImageFileName !== selectedLot.ImageFileName && (
                     <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                       <p className="text-sm text-green-700 font-medium">✓ New image ready to save</p>
                     </div>
