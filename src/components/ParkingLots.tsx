@@ -2,7 +2,6 @@
 
 import { faLocationArrow, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import Link from "next/link";
 
 import { useGoogleMapsDirections } from "@/hooks/useMap";
 import { useParkingLots } from "@/hooks/useParkingLots";
@@ -11,7 +10,6 @@ import { Campus } from "@/models/Campus";
 import { ParkingLot } from "@/models/ParkingLot";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import HorizontalWrap from "./HorizontalWrap";
-import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
 const getAvailabilityColor = (available: number, total: number) => {
@@ -109,23 +107,15 @@ export default function ParkingLots({ campusID, campusShortName }: { campusID: C
       <HorizontalWrap>
         <div className="text-center mb-16">
           <h2 className="text-gray-900 mb-4 text-3xl">
-            Popular Campus Parking Locations
+            Campus Parking Locations
           </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Browse available parking near your classes. Updated in real-time.
+            Browse available parking at the {campusShortName} Campus.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {topLots.map((lot) => <Lot key={lot.ID} lot={lot} />)}
-        </div>
-
-        <div className="text-center mt-12">
-          <Link href={`/${campusShortName}/map`}>
-            <Button size="lg" className="px-8 border-2  hover:border-black transition-colors hover:bg-white hover:text-black cursor-pointer">
-              View Map
-            </Button>
-          </Link>
+          {parkingLots.map((lot) => <Lot key={lot.ID} lot={lot} />)}
         </div>
       </HorizontalWrap>
     </section>
@@ -141,7 +131,7 @@ function Lot({ lot }: { lot: ParkingLot }) {
   const isCovered = lot.Floors?.some(floor => floor.Features?.includes('Covered'));
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-gray-50">
       <div className="relative h-48">
         {lot.ImageFileName && <ImageWithFallback
           src={`/api/images/${lot.ImageFileName}`}

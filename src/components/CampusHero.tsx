@@ -76,7 +76,7 @@ export default function CampusHero({ videoURL }: CampusHeroProps) {
                         <div className="flex-1 flex items-center gap-2 px-3">
                             <FontAwesomeIcon icon={faMagnifyingGlass} className="size-5 text-gray-400"/>
                             <Input
-                                placeholder="Search by campus name..."
+                                placeholder="Search by Campus"
                                 className="border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                                 value={searchQuery}
                                 onChange={(e) => {

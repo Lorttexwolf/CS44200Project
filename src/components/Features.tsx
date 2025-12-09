@@ -46,7 +46,7 @@ export default function Features() {
           {features.map((feature, index) => (
             <Card
               key={index}
-              className="border-0 shadow-sm hover:shadow-md transition-shadow"
+              className="border-0 shadow-sm hover:shadow-md transition-shadow bg-white"
             >
               <CardContent className="p-6">
                 <div className="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center mb-4">

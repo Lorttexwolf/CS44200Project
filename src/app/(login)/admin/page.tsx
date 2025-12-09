@@ -9,12 +9,11 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useCampuses } from '@/hooks/useCampuses';
 import { useParkingLots } from '@/hooks/useParkingLots';
-import { ParkingLot, CreateParkingLot } from '@/models/ParkingLot';
+import { CreateParkingLot, ParkingLot } from '@/models/ParkingLot';
 import {
   faCheck,
   faClock,
   faMapMarkerAlt,
-  faParking,
   faPencil,
   faPlus,
   faTrash,
@@ -41,7 +40,7 @@ export default function AdminPage() {
     if (!authLoading && !user) {
       window.location.href = '/login';
     }
-    
+
     if (!authLoading && user && user.servicePermissions !== 'admin' && user.servicePermissions !== 'campus_admin') {
       window.location.href = '/profile';
     }
@@ -132,7 +131,7 @@ export default function AdminPage() {
         setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
 
       }
-      
+
       setTimeout(() => {
         setEditMode(false);
         setCreateMode(false);
@@ -263,19 +262,19 @@ export default function AdminPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-linear-r from-blue-50 via-white to-purple-50 pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div className="min-h-screen bg-linear-r from-blue-50 via-white to-purple-50 pt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 text-center">
-            <div className="inline-block mb-4">
+            {/* <div className="inline-block mb-4">
               <div className="bg-blue-600 text-white rounded-full p-4 shadow-lg">
                 <FontAwesomeIcon icon={faParking} className="size-8" />
               </div>
-            </div>
+            </div> */}
             <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
             <p className="text-xl text-gray-600">Manage parking lot images and information</p>
-            
+
             {/* Campus Selector */}
             {!editMode && !createMode && campuses.length > 0 && (
               <div className="mt-6 flex items-center justify-center gap-3">
@@ -293,7 +292,7 @@ export default function AdminPage() {
                 </select>
               </div>
             )}
-            
+
             <div className="mt-4 flex items-center justify-center gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
@@ -301,11 +300,18 @@ export default function AdminPage() {
               </span>
               <span>•</span>
               <span>Welcome, {user.firstName}!</span>
+              {selectedCampusId && campuses.find(c => c.ID === selectedCampusId) && <>
+
+                <span>•</span>
+                <p className='text-gray-500 uppercase'>{campuses.find(c => c.ID === selectedCampusId)!.Domain}</p>
+
+              </>}
             </div>
-            
+
+
             {!editMode && !createMode && (
               <div className="mt-6">
-                <Button 
+                <Button
                   onClick={handleCreate}
                   className="bg-linear-to-r bg-green-600 hover:bg-green-700 text-white shadow-xl cursor-pointer transform hover:scale-101 transition-all"
                   size="lg"
@@ -319,18 +325,17 @@ export default function AdminPage() {
 
           {message && (
             <div
-              className={`mb-8 p-4 rounded-xl shadow-lg animate-in slide-in-from-top duration-300 ${
-                message.type === 'success' 
-                  ? 'bg-green-50 border-2 border-green-200 text-green-800' 
+              className={`mb-8 p-4 rounded-xl shadow-lg animate-in slide-in-from-top duration-300 ${message.type === 'success'
+                  ? 'bg-green-50 border-2 border-green-200 text-green-800'
                   : 'bg-red-50 border-2 border-red-200 text-red-800'
-              }`}
+                }`}
             >
               <p className="font-semibold text-center">{message.text}</p>
             </div>
           )}
 
           {(editMode || createMode) ? (
-            <Card className="mb-8 shadow-2xl border-2 border-blue-100 overflow-hidden">
+            <Card className="mb-8 shadow-2xl border-2 border-blue-100 overflow-hidden bg-gray-50">
               <CardHeader className={`bg-linear-r ${createMode ? 'from-green-600 to-green-800' : 'from-blue-600 to-blue-800'} text-white`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -339,9 +344,9 @@ export default function AdminPage() {
                       {createMode ? 'Create New Parking Lot' : `Edit: ${selectedLot?.Name}`}
                     </CardTitle>
                   </div>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={handleCancel}
                     className="text-white hover:bg-white/20 cursor-pointer"
                   >
@@ -460,16 +465,15 @@ export default function AdminPage() {
                 </div>
 
                 <div className="flex gap-4 pt-6 border-t">
-                  <Button 
-                    onClick={handleSave} 
+                  <Button
+                    onClick={handleSave}
                     disabled={saving}
-                    className={`flex-1 ${
-                      saving 
-                        ? 'bg-gray-400 cursor-not-allowed pointer-events-none' 
+                    className={`flex-1 ${saving
+                        ? 'bg-gray-400 cursor-not-allowed pointer-events-none'
                         : createMode
-                        ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
-                        : 'bg-linear-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
-                    } text-white shadow-lg transition-all`}
+                          ? 'bg-green-600 hover:bg-green-700 cursor-pointer'
+                          : 'bg-linear-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
+                      } text-white shadow-lg transition-all`}
                     size="lg"
                   >
                     {saving ? (
@@ -484,14 +488,13 @@ export default function AdminPage() {
                       </>
                     )}
                   </Button>
-                  <Button 
-                    variant="outline" 
-                    onClick={handleCancel} 
+                  <Button
+                    variant="outline"
+                    onClick={handleCancel}
                     disabled={saving}
                     size="lg"
-                    className={`flex-1 border-2 ${
-                      saving ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
-                    }`}
+                    className={`flex-1 border-2 ${saving ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'
+                      }`}
                   >
                     <FontAwesomeIcon icon={faXmark} className="mr-2" />
                     Cancel
@@ -500,14 +503,14 @@ export default function AdminPage() {
               </CardContent>
             </Card>
           ) : (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
               {parkingLots.map((lot) => {
 
                 const badge = getAvailabilityBadge(lot.AvailableSpots, lot.TotalSpots);
                 const percentage = (lot.AvailableSpots / lot.TotalSpots) * 100;
-                
+
                 return (
-                  <Card key={lot.ID} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-200 group">
+                  <Card key={lot.ID} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 bg-gray-50 border-gray-100 hover:border-blue-200 group">
                     <div className="relative h-56 overflow-hidden">
                       <ImageWithFallback
                         src={`/api/images/${lot.ImageFileName}`}
@@ -523,8 +526,8 @@ export default function AdminPage() {
                         <h3 className="text-xl font-bold text-white drop-shadow-lg">{lot.Name}</h3>
                       </div>
                     </div>
-                    
-                    <CardContent className="p-6 space-y-4">
+
+                    <CardContent className="space-y-4">
                       <div className="flex items-start gap-2 text-sm text-gray-600">
                         <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1 text-blue-600" />
                         <span>{lot.Address}</span>
@@ -547,22 +550,21 @@ export default function AdminPage() {
 
                       <div className="flex items-center justify-between gap-3 pt-4 border-t">
                         <div className="flex gap-2">
-                          <Button 
-                            onClick={() => handleEdit(lot)} 
+                          <Button
+                            onClick={() => handleEdit(lot)}
                             className="bg-blue-600 hover:bg-blue-700 shadow-md cursor-pointer"
                             size="sm"
                           >
                             <FontAwesomeIcon icon={faPencil} className="mr-2" />
                             Edit
                           </Button>
-                          <Button 
+                          <Button
                             onClick={() => handleDelete(lot.ID, lot.ImageFileName ?? undefined)}
                             disabled={deleting === lot.ID}
-                            className={`${
-                              deleting === lot.ID
+                            className={`bg-gray-400 hover:bg-red-600 ${deleting === lot.ID
                                 ? 'bg-gray-400 cursor-not-allowed pointer-events-none'
-                                : 'bg-red-600 hover:bg-red-700 cursor-pointer'
-                            } shadow-md`}
+                                : ' hover:bg-red-700 cursor-pointer'
+                              } shadow-md`}
                             size="sm"
                           >
                             {deleting === lot.ID ? (

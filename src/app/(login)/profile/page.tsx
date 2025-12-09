@@ -1,10 +1,10 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
 
 export default function ProfilePage() {
     const { user, loading, logout, isAuthenticated } = useAuth();
@@ -124,11 +124,11 @@ export default function ProfilePage() {
                                         View Parking Map
                                     </Button>
                                 </Link>
-                                <Link href="/reservations">
+                                {/* <Link href="/reservations">
                                     <Button variant="outline" className="w-full cursor-pointer">
                                         My Reservations
                                     </Button>
-                                </Link>
+                                </Link> */}
                                 <Button variant="outline" className="w-full cursor-pointer" onClick={handleLogout}>
                                     Logout
                                 </Button>
@@ -139,7 +139,7 @@ export default function ProfilePage() {
                     {/* Additional Sections */}
                     <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Parking Stats */}
-                        <div className="bg-white shadow rounded-lg p-6">
+                        {/* <div className="bg-white shadow rounded-lg p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Parking Stats</h3>
                             <div className="space-y-3">
                                 <div className="flex justify-between items-center">
@@ -155,10 +155,10 @@ export default function ProfilePage() {
                                     <span className="font-semibold text-gray-900">0</span>
                                 </div>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Recent Activity */}
-                        <div className="bg-white shadow rounded-lg p-6">
+                        <div className="bg-white shadow rounded-lg p-6 col-span-2">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
                             <div className="text-gray-500 text-center py-8">
                                 No recent activity
