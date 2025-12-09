@@ -27,7 +27,7 @@ export default function RootLayout({children} : Readonly < {
             <body className="flex flex-col min-h-screen">
                 <Header/>
 
-                <main className="grow w-full pt-[72px]">
+                <main className="grow w-full pt-[95px]">
                     {children}
                 </main>
                 <Footer/>
