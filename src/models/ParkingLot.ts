@@ -6,17 +6,17 @@ export const ParkingLotSchema = z.object({
     ID: z.number(),
     Name: z.string(),
     Address: z.string(),
-    Image_URL: z.url(),
-    Latitude: z.number(),
-    Longitude: z.number(),
+    Image_URL: z.url().optional().nullable(),
+    Latitude: z.coerce.number(),
+    Longitude: z.coerce.number(),
     CreatedAt: z.date(),
 
     Floors: ParkingFloorSchema.array(),
 
     // TotalSpots & AvailableSpots is computed by Floors ^
 
-    TotalSpots: z.number(),
-    AvailableSpots: z.number()
+    TotalSpots: z.coerce.number(),
+    AvailableSpots: z.coerce.number()
 
 });
 

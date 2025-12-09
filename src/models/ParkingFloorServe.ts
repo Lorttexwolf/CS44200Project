@@ -38,7 +38,7 @@ export async function queryFloorsOfParkingLot(lotID: ParkingLot["ID"]) {
         AvailableSpots: r.Available_Spots,
         TotalSpots: r.Total_Spots,
         CreatedAt: r.Created_At,
-        Features: r.Features,
+        Features: (r.Features as string).split(","),
         Floor: r.Floor_Number,
         FloorName: r.Floor_Name
 
