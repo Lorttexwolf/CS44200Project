@@ -40,7 +40,7 @@ export default function HowItWorks() {
         </div>
 
         {/* Steps */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-8">
           {steps.map((step, index) => (
             <div key={index} className="text-center">
               <div className="relative inline-block mb-6">

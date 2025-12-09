@@ -63,7 +63,7 @@ export default function Hero() {
                     </h1>
                 </div>
                 <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto drop-shadow-md">
-                    Find and reserve parking spots on campus in seconds. Save time, reduce stress,
+                    Find parking spots on campus in seconds. Save time, reduce stress,
                     and never miss a lecture.
                 </p>
 
@@ -140,7 +140,7 @@ export default function Hero() {
                 </div>
 
                 <p className="text-sm text-gray-200">
-                    🎓 Trusted by over 10,000 students across 50+ universities
+                    🎓 Trusted by 2 students across 1 universiy
                 </p>
             </div>
         </section>
