@@ -39,7 +39,7 @@ interface ParkingLot {
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(1);
+  const { parkingLots, loading: lotsLoading, refetch } = useParkingLots(1);
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
@@ -100,34 +100,9 @@ export default function AdminPage() {
     setMessage(null);
 
     try {
-      if (createMode) {
-        // Ensure campusId is set
-        const lotData = {
-          ...formData,
-          campusId: formData.campusId || 1
-        } as ParkingLot;
-        await createParkingLot(lotData);
-        setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
-      } else {
-        if (!selectedLot?.id) return;
-
-        if (formData.image && 
-            formData.image !== selectedLot.image && 
-            selectedLot.image.startsWith('/api/images/')) {
-          try {
-            await fetch('/api/images/delete', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ imageUrl: selectedLot.image }),
-            });
-          } catch (err) {
-            console.warn('Failed to delete old image:', err);
-          }
-        }
-
-        await updateParkingLot(selectedLot.id, formData);
-        setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
-      }
+      // TODO: Implement create/update functionality
+      // The API routes don't support POST/PUT yet
+      setMessage({ type: 'error', text: '✗ Create/Update functionality not yet implemented' });
       
       setTimeout(() => {
         setEditMode(false);
@@ -168,6 +143,19 @@ export default function AdminPage() {
 
       setMessage({ type: 'success', text: '✓ Parking lot deleted successfully!' });
       setTimeout(() => {
+  const handleDelete = async (id: number, imageUrl: string) => {
+    if (!confirm('Are you sure you want to delete this parking lot? This action cannot be undone.')) {
+      return;
+    }
+
+    setDeleting(id);
+    setMessage(null);
+
+    try {
+      // TODO: Implement delete functionality
+      // The API routes don't support DELETE yet
+      setMessage({ type: 'error', text: '✗ Delete functionality not yet implemented' });
+      setTimeout(() => {
         setMessage(null);
       }, 3000);
     } catch (error) {
@@ -175,32 +163,7 @@ export default function AdminPage() {
     } finally {
       setDeleting(null);
     }
-  };
-
-  const handleImageUpload = (url: string) => {
-    setFormData({ ...formData, image: url });
-  };
-
-  const getAvailabilityColor = (available: number, total: number) => {
-    const percentage = (available / total) * 100;
-    if (percentage > 30) return 'bg-green-500';
-    if (percentage > 10) return 'bg-yellow-500';
-    return 'bg-red-500';
-  };
-
-  const getAvailabilityBadge = (available: number, total: number) => {
-    const percentage = (available / total) * 100;
-    if (percentage > 30) return { variant: 'default' as const, text: 'Available', color: 'bg-green-100 text-green-800' };
-    if (percentage > 10) return { variant: 'secondary' as const, text: 'Limited', color: 'bg-yellow-100 text-yellow-800' };
-    return { variant: 'destructive' as const, text: 'Almost Full', color: 'bg-red-100 text-red-800' };
-  };
-
-  if (authLoading || lotsLoading) {
-    return (
-      <>
-        <Header />
-        <div className="min-h-screen flex items-center justify-center pt-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="text-center">
+  };      <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-xl text-gray-600">Loading dashboard...</p>
           </div>
