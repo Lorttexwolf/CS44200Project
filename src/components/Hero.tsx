@@ -7,7 +7,6 @@ import { useState } from "react";
 import { Input } from "./ui/input";
 
 import { useParkingLots } from "@/hooks/useParkingLots";
-import { RotatingText } from "./ui/shadcn-io/rotating-text";
 
 interface HeroProps {
     campusID: number;
@@ -32,7 +31,8 @@ export default function Hero({ campusID, campusName, videoURL }: HeroProps) {
 
     return (
         <section
-            className="relative min-h-screen flex items-center justify-center pt-16">
+            className="relative flex items-center justify-center pt-16"
+            style={{ minHeight: '50vh' }}>
             {/* Background image */}
             <div className="absolute inset-0 z-10">
                 <video
@@ -48,21 +48,8 @@ export default function Hero({ campusID, campusName, videoURL }: HeroProps) {
             {/* Content */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center py-20 z-20">
                 <div className="mb-8 overflow-visible">
-                    <h1 className="text-white text-4xl sm:text-5xl md:text-7xl font-bold drop-shadow-2xl flex flex-col items-center justify-center gap-2 overflow-visible">
-                        <span className="tracking-tight">Never Be</span>
-                        <span className="relative inline-block min-w-40 sm:min-w-[200px] md:min-w-[280px] lg:min-w-[320px]">
-                            <RotatingText
-                                text={["Late", "Stressed", "Lost", "Frustrated", "Stuck", "Worried", "Rushing", "Anxious"]}
-                                duration={2500}
-                                className="bg-linear-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent font-extrabold"
-                                transition={{
-                                duration: 0.5,
-                                ease: "easeInOut"
-                            }}/>
-                        </span>
-                        <span className="text-5xl sm:text-6xl md:text-8xl font-black bg-linear-to-r from-white via-blue-100 to-white bg-clip-text text-transparent tracking-tight pb-3">
-                            Again
-                        </span>
+                    <h1 className="text-white text-4xl sm:text-5xl md:text-7xl font-bold drop-shadow-2xl">
+                        {campusName}
                     </h1>
                 </div>
                 <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto drop-shadow-md">
@@ -142,9 +129,6 @@ export default function Hero({ campusID, campusName, videoURL }: HeroProps) {
                     )}
                 </div>
 
-                <p className="text-sm text-gray-200">
-                    🎓 Trusted by 2 students across 1 universiy
-                </p>
             </div>
         </section>
     );

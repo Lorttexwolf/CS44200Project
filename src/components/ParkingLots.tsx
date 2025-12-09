@@ -169,13 +169,7 @@ export default function ParkingLots({ campusID, campusShortName }: { campusID: C
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t">
-                    <div>
-                      <p className="text-gray-900">Free</p>
-                      <p className="text-sm text-gray-500">No hourly fee</p>
-                    </div>
-                    <Button className="cursor-pointer bg-blue-700 text-white hover:bg-blue-800">Reserve Now</Button>
-                  </div>
+
                 </CardContent>
               </Card>
             );
