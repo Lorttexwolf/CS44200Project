@@ -1,49 +1,35 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { ImageWithFallback } from '@/components/figma/ImageWithFallback';
+import Header from '@/components/Header';
+import ImageUpload from '@/components/ImageUpload';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useParkingLots } from '@/hooks/useParkingLots';
-import Header from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import ImageUpload from '@/components/ImageUpload';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPencil, 
-  faXmark, 
-  faCheck, 
-  faParking,
-  faMapMarkerAlt,
-  faDollarSign,
+import { ParkingLot } from '@/models/ParkingLot';
+import {
+  faCheck,
   faClock,
+  faDollarSign,
+  faMapMarkerAlt,
+  faParking,
+  faPencil,
   faPlus,
-  faTrash
+  faTrash,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
-
-interface ParkingLot {
-  id?: number;
-  name: string;
-  address: string;
-  distance: string;
-  available: number;
-  total: number;
-  price: string;
-  image: string;
-  covered: boolean;
-  hourlyRate: string;
-  lat: number;
-  lng: number;
-  campusId?: number;
-}
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { useEffect, useState } from 'react';
 
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
-  const { parkingLots, loading: lotsLoading, refetch } = useParkingLots(1);
-  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
+  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(1);
+  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>();
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
-  const [formData, setFormData] = useState<Partial<ParkingLot>>({});
+  const [formData, setFormData] = useState<Partial<ParkingLot> & { CampusID: number }>();
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -70,7 +56,7 @@ export default function AdminPage() {
     setSelectedLot(null);
     setEditMode(false);
     setCreateMode(false);
-    setFormData({});
+    setFormData(null);
     setMessage(null);
   };
 
@@ -79,18 +65,14 @@ export default function AdminPage() {
     setEditMode(false);
     setSelectedLot(null);
     setFormData({
-      name: '',
-      address: '',
-      distance: '',
-      available: 0,
-      total: 0,
-      price: '',
-      hourlyRate: '',
-      image: '/placeholder-parking.jpg',
-      covered: false,
-      lat: 41.580083,
-      lng: -87.472973,
-      campusId: 1
+      Name: '',
+      Address: '',
+      AvailableSpots: 0,
+      TotalSpots: 0,
+      ImageFileName: '/placeholder-parking.jpg',
+      Latitude: 41.580083,
+      Longitude: -87.472973,
+      CampusID: 1
     });
     setMessage(null);
   };
@@ -100,9 +82,34 @@ export default function AdminPage() {
     setMessage(null);
 
     try {
-      // TODO: Implement create/update functionality
-      // The API routes don't support POST/PUT yet
-      setMessage({ type: 'error', text: '✗ Create/Update functionality not yet implemented' });
+      if (createMode) {
+        // Ensure campusId is set
+        const lotData = {
+          ...formData,
+          campusId: formData.CampusID || 1
+        } as ParkingLot;
+        await createParkingLot(lotData);
+        setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
+      } else {
+        if (!selectedLot?.id) return;
+
+        if (formData.image && 
+            formData.image !== selectedLot.image && 
+            selectedLot.image.startsWith('/api/images/')) {
+          try {
+            await fetch('/api/images/delete', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ imageUrl: selectedLot.image }),
+            });
+          } catch (err) {
+            console.warn('Failed to delete old image:', err);
+          }
+        }
+
+        await updateParkingLot(selectedLot.id, formData);
+        setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
+      }
       
       setTimeout(() => {
         setEditMode(false);
@@ -143,19 +150,6 @@ export default function AdminPage() {
 
       setMessage({ type: 'success', text: '✓ Parking lot deleted successfully!' });
       setTimeout(() => {
-  const handleDelete = async (id: number, imageUrl: string) => {
-    if (!confirm('Are you sure you want to delete this parking lot? This action cannot be undone.')) {
-      return;
-    }
-
-    setDeleting(id);
-    setMessage(null);
-
-    try {
-      // TODO: Implement delete functionality
-      // The API routes don't support DELETE yet
-      setMessage({ type: 'error', text: '✗ Delete functionality not yet implemented' });
-      setTimeout(() => {
         setMessage(null);
       }, 3000);
     } catch (error) {
@@ -163,7 +157,32 @@ export default function AdminPage() {
     } finally {
       setDeleting(null);
     }
-  };      <div className="text-center">
+  };
+
+  const handleImageUpload = (url: string) => {
+    setFormData({ ...formData, image: url });
+  };
+
+  const getAvailabilityColor = (available: number, total: number) => {
+    const percentage = (available / total) * 100;
+    if (percentage > 30) return 'bg-green-500';
+    if (percentage > 10) return 'bg-yellow-500';
+    return 'bg-red-500';
+  };
+
+  const getAvailabilityBadge = (available: number, total: number) => {
+    const percentage = (available / total) * 100;
+    if (percentage > 30) return { variant: 'default' as const, text: 'Available', color: 'bg-green-100 text-green-800' };
+    if (percentage > 10) return { variant: 'secondary' as const, text: 'Limited', color: 'bg-yellow-100 text-yellow-800' };
+    return { variant: 'destructive' as const, text: 'Almost Full', color: 'bg-red-100 text-red-800' };
+  };
+
+  if (authLoading || lotsLoading) {
+    return (
+      <>
+        <Header />
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-xl text-gray-600">Loading dashboard...</p>
           </div>
@@ -472,15 +491,15 @@ export default function AdminPage() {
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {parkingLots.map((lot) => {
-                const badge = getAvailabilityBadge(lot.available, lot.total);
-                const percentage = (lot.available / lot.total) * 100;
+
+                const badge = getAvailabilityBadge(lot.AvailableSpots, lot.TotalSpots);
+                const percentage = (lot.AvailableSpots / lot.TotalSpots) * 100;
                 
                 return (
-                  <Card key={lot.id} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-200 group">
+                  <Card key={lot.ID} className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-2 border-gray-100 hover:border-blue-200 group">
                     <div className="relative h-56 overflow-hidden">
-                      <img
-                        src={lot.image}
-                        alt={lot.name}
+                      <ImageWithFallback
+                        src={`/api/images/${lot.ImageFileName}`}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                       <div className="absolute top-4 right-4">
@@ -490,36 +509,32 @@ export default function AdminPage() {
                       </div>
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
-                        <h3 className="text-xl font-bold text-white drop-shadow-lg">{lot.name}</h3>
+                        <h3 className="text-xl font-bold text-white drop-shadow-lg">{lot.Name}</h3>
                       </div>
                     </div>
                     
                     <CardContent className="p-6 space-y-4">
                       <div className="flex items-start gap-2 text-sm text-gray-600">
                         <FontAwesomeIcon icon={faMapMarkerAlt} className="mt-1 text-blue-600" />
-                        <span>{lot.address}</span>
+                        <span>{lot.Address}</span>
                       </div>
 
                       <div className="space-y-2">
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-600 font-medium">Availability</span>
                           <span className="text-gray-900 font-bold">
-                            {lot.available} / {lot.total} spots
+                            {lot.AvailableSpots} / {lot.TotalSpots} spots
                           </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2.5 overflow-hidden">
                           <div
-                            className={`h-full ${getAvailabilityColor(lot.available, lot.total)} transition-all duration-500`}
+                            className={`h-full ${getAvailabilityColor(lot.AvailableSpots, lot.TotalSpots)} transition-all duration-500`}
                             style={{ width: `${percentage}%` }}
                           />
                         </div>
                       </div>
 
                       <div className="flex items-center justify-between gap-3 pt-4 border-t">
-                        <div>
-                          <p className="text-lg font-bold text-gray-900">{lot.price}</p>
-                          <p className="text-sm text-gray-500">{lot.hourlyRate}</p>
-                        </div>
                         <div className="flex gap-2">
                           <Button 
                             onClick={() => handleEdit(lot)} 
@@ -530,7 +545,7 @@ export default function AdminPage() {
                             Edit
                           </Button>
                           <Button 
-                            onClick={() => lot.id && handleDelete(lot.id, lot.image)}
+                            onClick={() => handleDelete(lot.ID, lot.ImageFileName)}
                             disabled={deleting === lot.id}
                             className={`${
                               deleting === lot.id

@@ -1,16 +1,16 @@
 CREATE DATABASE IF NOT EXISTS PNWPARKING;
 USE PNWPARKING;
 
-DROP TABLE IF EXISTS ParkingFloorFeatures;
-DROP TABLE IF EXISTS FloorFeatures;
-DROP TABLE IF EXISTS ParkingFloor;
-DROP TABLE IF EXISTS ParkingLot;
-DROP TABLE IF EXISTS CampusUser;
-DROP TABLE IF EXISTS Campus;
-DROP TABLE IF EXISTS AccountEmailVerification;
-DROP TABLE IF EXISTS PasswordResetCodes;
-DROP TABLE IF EXISTS Account;
-DROP VIEW IF EXISTS ParkingLotSummary;
+-- DROP TABLE IF EXISTS ParkingFloorFeatures;
+-- DROP TABLE IF EXISTS FloorFeatures;
+-- DROP TABLE IF EXISTS ParkingFloor;
+-- DROP TABLE IF EXISTS ParkingLot;
+-- DROP TABLE IF EXISTS CampusUser;
+-- DROP TABLE IF EXISTS Campus;
+-- DROP TABLE IF EXISTS AccountEmailVerification;
+-- DROP TABLE IF EXISTS PasswordResetCodes;
+-- DROP TABLE IF EXISTS Account;
+-- DROP VIEW IF EXISTS ParkingLotSummary;
 
 CREATE TABLE Account (
     Account_Email VARCHAR(255) PRIMARY KEY,
@@ -65,7 +65,7 @@ CREATE TABLE ParkingLot (
     Pk_Campus_ID INT NOT NULL,
     Lot_Name VARCHAR(255) NOT NULL,
     Address VARCHAR(500),
-    Image_URL VARCHAR(500),
+    ImageFileName VARCHAR(500),
     Latitude DECIMAL(10, 8) NOT NULL,
     Longitude DECIMAL(11, 8) NOT NULL,
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -18,21 +18,21 @@ VALUES ('Purdue University Northwest', 'PNW', 'Rooted in Northwest Indiana, Purd
 SET @pnw_campus_id = LAST_INSERT_ID();
 
 -- Insert Parking Lots
-INSERT INTO ParkingLot (Pk_Campus_ID, Lot_Name, Address, Latitude, Longitude) VALUES
-(@pnw_campus_id, 'Peregrine West Lot', '123 University Ave', 41.580083, -87.472973),
-(@pnw_campus_id, 'Peregrine East Lot', '456 College St', 41.580085, -87.471805),
-(@pnw_campus_id, 'Peregrine South Lot', '789 Athletic Dr', 41.579703, -87.472422),
-(@pnw_campus_id, 'Griffin Lot', '789 Athletic Dr', 41.580203, -87.471360),
-(@pnw_campus_id, 'NorthEast Lot', '789 Athletic Dr', 41.586884, -87.471931),
-(@pnw_campus_id, 'EastSide Lot', '789 Athletic Dr', 41.586148, -87.471669),
-(@pnw_campus_id, 'CLO/ANDERSON Lot', '789 Athletic Dr', 41.586614, -87.474168),
-(@pnw_campus_id, 'Porter Lot', '789 Athletic Dr', 41.586283, -87.472905),
-(@pnw_campus_id, 'NILS Main Lot', '789 Athletic Dr', 41.582502, -87.474121),
-(@pnw_campus_id, 'Parking Garage', '789 Athletic Dr', 41.585347065461114, -87.47211545692153),
-(@pnw_campus_id, 'NILS South Lot', '789 Athletic Dr', 41.581664606392415, -87.4742623411903),
-(@pnw_campus_id, 'LAWSHE Lot', '789 Athletic Dr', 41.581723952443994, -87.47538588450159),
-(@pnw_campus_id, 'PNRC Parking Lot', '789 Athletic Dr', 41.58029797565626, -87.47513234013597),
-(@pnw_campus_id, 'R Riley Center Parking Lot', '789 Athletic Dr', 41.57940663881151, -87.47472392843363);
+INSERT INTO ParkingLot (Pk_Campus_ID, Lot_Name, Address, Latitude, Longitude, ImageFileName) VALUES
+(@pnw_campus_id, 'Peregrine West Lot', '123 University Ave', 41.580083, -87.472973, "1764671593747-WEST_parking.png"),
+(@pnw_campus_id, 'Peregrine East Lot', '456 College St', 41.580085, -87.471805, "1764671639117-peregrineEAST.png"),
+(@pnw_campus_id, 'Peregrine South Lot', '789 Athletic Dr', 41.579703, -87.472422, "1764671665309-parkin.png"),
+(@pnw_campus_id, 'Griffin Lot', '789 Athletic Dr', 41.580203, -87.471360, "1764671676091-Griffin.png"),
+(@pnw_campus_id, 'NorthEast Lot', '789 Athletic Dr', 41.586884, -87.471931, "1764671791641-NElot.png"),
+(@pnw_campus_id, 'EastSide Lot', '789 Athletic Dr', 41.586148, -87.471669, "1764671813699-EastSideLot.png"),
+(@pnw_campus_id, 'CLO/ANDERSON Lot', '789 Athletic Dr', 41.586614, -87.474168, "1764671828551-CLOANDERSON.png"),
+(@pnw_campus_id, 'Porter Lot', '789 Athletic Dr', 41.586283, -87.472905, "1764671837406-porter.png"),
+(@pnw_campus_id, 'NILS Main Lot', '789 Athletic Dr', 41.582502, -87.474121, "1764671846695-NILSLOT.jpg"),
+(@pnw_campus_id, 'Parking Garage', '789 Athletic Dr', 41.585347065461114, -87.47211545692153, "1764671855624-PGARAGE.png"),
+(@pnw_campus_id, 'NILS South Lot', '789 Athletic Dr', 41.581664606392415, -87.4742623411903, "1764671865844-NILSSOUTH.png"),
+(@pnw_campus_id, 'LAWSHE Lot', '789 Athletic Dr', 41.581723952443994, -87.47538588450159, "1764671879221-lawsheLTO.png"),
+(@pnw_campus_id, 'FNRC Parking Lot', '789 Athletic Dr', 41.58029797565626, -87.47513234013597, "1764672013930-FNRC.png"),
+(@pnw_campus_id, 'R Riley Center Parking Lot', '789 Athletic Dr', 41.57940663881151, -87.47472392843363, "1764672084226-hospital.png");
 
 -- Get lot IDs
 SET @first_lot_id = LAST_INSERT_ID();

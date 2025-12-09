@@ -1,8 +1,9 @@
 'use client';
 
 import { useCampuses } from '@/hooks/useCampuses';
-import { Card } from './ui/card';
 import Link from 'next/link';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Card } from './ui/card';
 
 export default function CampusSelection() {
   const { campuses, loading, error } = useCampuses();
@@ -64,7 +65,7 @@ export default function CampusSelection() {
                     </video>
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <img 
+                      <ImageWithFallback 
                         src={campus.IconURL} 
                         alt={campus.Name}
                         className="max-h-24 max-w-[80%] object-contain"
@@ -73,7 +74,7 @@ export default function CampusSelection() {
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
-                    <img 
+                    <ImageWithFallback 
                       src={campus.IconURL} 
                       alt={campus.Name}
                       className="max-h-12 object-contain"

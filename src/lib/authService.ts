@@ -1,6 +1,6 @@
-import pool from './db';
-import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import bcrypt from 'bcryptjs';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import pool from './db';
 
 export interface User {
   email: string;
@@ -39,15 +39,16 @@ export async function registerUser(data: RegisterData): Promise<{ success: boole
       return { success: false, message: 'Email already registered' };
     }
 
+    // We aren't doing hashed passwords for ease of presentation.
     // Hash password
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(data.password, saltRounds);
+    // const saltRounds = 10;
+    // const passwordHash = await bcrypt.hash(data.password, saltRounds);
 
     // Insert new user
     await connection.query<ResultSetHeader>(
-      `INSERT INTO Account (Account_Email, Password_Hash, First_Name, Last_Name, Verified, Service_Permissions)
+      `INSERT INTO Account (Account_Email, Password, First_Name, Last_Name, Verified, Service_Permissions)
        VALUES (?, ?, ?, ?, TRUE, 'user')`,
-      [data.email, passwordHash, data.firstName, data.lastName]
+      [data.email, data.password, data.firstName, data.lastName]
     );
 
     await connection.commit();
@@ -71,7 +72,7 @@ export async function loginUser(data: LoginData): Promise<{ success: boolean; me
   try {
     // Get user from database
     const [users] = await pool.query<RowDataPacket[]>(
-      `SELECT Account_Email, Password_Hash, First_Name, Last_Name, Verified, Service_Permissions
+      `SELECT Account_Email, Password, First_Name, Last_Name, Verified, Service_Permissions
        FROM Account
        WHERE Account_Email = ?`,
       [data.email]
@@ -83,8 +84,10 @@ export async function loginUser(data: LoginData): Promise<{ success: boolean; me
 
     const user = users[0];
 
+    // We aren't doing hashed passwords for ease of presentation.
     // Verify password
-    const isPasswordValid = await bcrypt.compare(data.password, user.Password_Hash);
+    const isPasswordValid = data.password === user.Password;
+    // const isPasswordValid = await bcrypt.compare(data.password, user.Password_Hash);
 
     if (!isPasswordValid) {
       return { success: false, message: 'Invalid email or password' };

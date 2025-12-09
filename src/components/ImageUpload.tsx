@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from './ui/button';
+import { faCheck, faCloudArrowUp, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCloudArrowUp, faCheck, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { useState } from 'react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+import { Button } from './ui/button';
 
 interface ImageUploadProps {
   onUploadComplete?: (url: string) => void;
@@ -92,7 +93,7 @@ export default function ImageUpload({ onUploadComplete, currentImage }: ImageUpl
     <div className="space-y-4">
       {preview && (
         <div className="relative w-full h-64 border-2 border-gray-300 rounded-xl overflow-hidden shadow-lg">
-          <img
+          <ImageWithFallback
             src={preview}
             alt="Preview"
             className="w-full h-full object-cover"
