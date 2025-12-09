@@ -285,7 +285,7 @@ export default function AdminPage() {
               <div className="mt-6">
                 <Button 
                   onClick={handleCreate}
-                  className="bg-linear-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-xl cursor-pointer transform hover:scale-105 transition-all"
+                  className="bg-linear-to-r bg-green-600 hover:bg-green-700 text-white shadow-xl cursor-pointer transform hover:scale-101 transition-all"
                   size="lg"
                 >
                   <FontAwesomeIcon icon={faPlus} className="mr-2" />
