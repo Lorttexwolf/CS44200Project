@@ -13,7 +13,7 @@ const team = [
   {
     name: "Justin Meng",
     role: "BackEnd Developer",
-    image: "/team/Justin.jpg",
+    image: "/team/justin.jpg",
     bio: "CS student focused on scalable backend systems"
   },
   {
