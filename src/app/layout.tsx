@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 export const metadata : Metadata = {
-    title: "PNW Parking",
+    title: "UniPark",
     description: "This is a website that helps PNW with finding parking spots"
 };
 
