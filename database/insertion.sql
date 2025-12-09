@@ -1,13 +1,13 @@
 USE PNWPARKING;
 
-SET SQL_SAFE_UPDATES = 0; 
-DELETE FROM ParkingFloorFeatures;
-DELETE FROM ParkingFloor;
-DELETE FROM ParkingLot;
-DELETE FROM CampusUser;
-DELETE FROM Campus;
-DELETE FROM Account;
-SET SQL_SAFE_UPDATES = 1;
+-- SET SQL_SAFE_UPDATES = 0; 
+-- DELETE FROM ParkingFloorFeatures;
+-- DELETE FROM ParkingFloor;
+-- DELETE FROM ParkingLot;
+-- DELETE FROM CampusUser;
+-- DELETE FROM Campus;
+-- DELETE FROM Account;
+-- SET SQL_SAFE_UPDATES = 1;
 
 INSERT INTO Account (Account_Email, Verified, First_Name, Last_Name, Service_Permissions, Password)
 VALUES ('admin@pnw.edu', TRUE, 'Admin', 'User', 'admin', '123456789');
@@ -34,15 +34,46 @@ INSERT INTO ParkingLot (Pk_Campus_ID, Lot_Name, Address, Latitude, Longitude) VA
 (@pnw_campus_id, 'PNRC Parking Lot', '789 Athletic Dr', 41.58029797565626, -87.47513234013597),
 (@pnw_campus_id, 'R Riley Center Parking Lot', '789 Athletic Dr', 41.57940663881151, -87.47472392843363);
 
+-- Get lot IDs
+SET @first_lot_id = LAST_INSERT_ID();
 
--- Insert Floors for Parking Garage ONLY
+-- Insert 1 floor for all single-level lots (Floor_Number = 1 for ground level)
 INSERT INTO ParkingFloor (Pk_Lot_ID, Floor_Number, Floor_Name, Total_Spots, Available_Spots) VALUES
-(@parking_garage_id, 1, 'Ground Floor', 100, 20),
-(@parking_garage_id, 2, 'Level 2', 100, 45),
-(@parking_garage_id, 3, 'Level 3', 150, 56),
-(@parking_garage_id, 4, 'Level 4', 150, 35);
+-- Peregrine West Lot
+(@first_lot_id, 1, 'Ground Level', 150, 24),
+-- Peregrine East Lot
+(@first_lot_id + 1, 1, 'Ground Level', 200, 48),
+-- Peregrine South Lot
+(@first_lot_id + 2, 1, 'Ground Level', 500, 156),
+-- Griffin Lot
+(@first_lot_id + 3, 1, 'Ground Level', 300, 75),
+-- NorthEast Lot
+(@first_lot_id + 4, 1, 'Ground Level', 250, 60),
+-- EastSide Lot
+(@first_lot_id + 5, 1, 'Ground Level', 180, 40),
+-- CLO/ANDERSON Lot
+(@first_lot_id + 6, 1, 'Ground Level', 120, 30),
+-- Porter Lot
+(@first_lot_id + 7, 1, 'Ground Level', 100, 25),
+-- NILS Main Lot
+(@first_lot_id + 8, 1, 'Ground Level', 400, 100),
+-- NILS South Lot
+(@first_lot_id + 10, 1, 'Ground Level', 350, 85),
+-- LAWSHE Lot
+(@first_lot_id + 11, 1, 'Ground Level', 200, 50),
+-- PNRC Parking Lot
+(@first_lot_id + 12, 1, 'Ground Level', 300, 70),
+-- R Riley Center Parking Lot
+(@first_lot_id + 13, 1, 'Ground Level', 150, 35);
 
--- Get floor IDs for features
+-- Insert Floors for Parking Garage ONLY (multiple floors)
+INSERT INTO ParkingFloor (Pk_Lot_ID, Floor_Number, Floor_Name, Total_Spots, Available_Spots) VALUES
+(@first_lot_id + 9, 1, 'Ground Floor', 100, 20),
+(@first_lot_id + 9, 2, 'Level 2', 100, 45),
+(@first_lot_id + 9, 3, 'Level 3', 150, 56),
+(@first_lot_id + 9, 4, 'Level 4', 150, 35);
+
+-- Get floor IDs for Parking Garage features (the last 4 floors inserted)
 SET @floor1_id = LAST_INSERT_ID();
 SET @floor2_id = @floor1_id + 1;
 SET @floor3_id = @floor1_id + 2;
