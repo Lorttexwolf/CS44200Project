@@ -22,3 +22,12 @@ export const ParkingLotSchema = z.object({
 });
 
 export type ParkingLot = z.infer<typeof ParkingLotSchema>;
+
+// Schema for creating a new parking lot (excludes auto-generated fields)
+export const CreateParkingLotSchema = ParkingLotSchema.omit({
+    ID: true,
+    CreatedAt: true,
+    Floors: true
+});
+
+export type CreateParkingLot = z.infer<typeof CreateParkingLotSchema>;

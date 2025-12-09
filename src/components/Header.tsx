@@ -80,7 +80,7 @@ export default function Header() {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button className="cursor-pointer cursor-pointer transition-colors hover:bg-white hover:text-black hover:border-black">
+                  <Button className="cursor-pointer transition-colors hover:bg-white hover:text-black hover:border-black">
                     Sign Up
                   </Button>
                 </Link>

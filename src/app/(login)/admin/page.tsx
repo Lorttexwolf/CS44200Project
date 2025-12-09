@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useParkingLots } from '@/hooks/useParkingLots';
-import { ParkingLot } from '@/models/ParkingLot';
+import { ParkingLot, CreateParkingLot } from '@/models/ParkingLot';
 import {
   faCheck,
   faClock,
@@ -25,13 +25,14 @@ import { useEffect, useState } from 'react';
 export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
   const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(1);
-  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>();
+  const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
-  const [formData, setFormData] = useState<(Partial<ParkingLot>) | undefined>(undefined);
+  const [formData, setFormData] = useState<Partial<ParkingLot> | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -83,9 +84,24 @@ export default function AdminPage() {
     console.log("Saving....");
 
     try {
+      // Upload image if there's a pending file
+      let imageFileName = formData?.ImageFileName;
+      if (pendingImageFile) {
+        try {
+          imageFileName = await uploadImage(pendingImageFile);
+        } catch (err) {
+          setMessage({ type: 'error', text: '✗ Failed to upload image' });
+          setSaving(false);
+          return;
+        }
+      }
+
       if (createMode) {
-        // Ensure campusId is set
-        const lotData = formData;
+        // Create new parking lot with uploaded image
+        const lotData = {
+          ...(formData ?? {}),
+          ImageFileName: imageFileName,
+        } as CreateParkingLot;
         await createParkingLot(lotData);
         setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
 
@@ -93,7 +109,8 @@ export default function AdminPage() {
 
         if (!selectedLot?.ID) return;
 
-        if (formData?.ImageFileName && selectedLot?.ImageFileName && formData?.ImageFileName !== selectedLot?.ImageFileName) {
+        // Delete old image if a new one was uploaded
+        if (imageFileName && selectedLot?.ImageFileName && imageFileName !== selectedLot?.ImageFileName) {
           try {
             await fetch('/api/images/delete', {
               method: 'POST',
@@ -105,7 +122,10 @@ export default function AdminPage() {
           }
         }
 
-        await updateParkingLot(selectedLot.ID, formData);
+        await updateParkingLot(selectedLot.ID, {
+          ...(formData ?? {}),
+          ImageFileName: imageFileName,
+        });
         setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
 
       }
@@ -114,7 +134,8 @@ export default function AdminPage() {
         setEditMode(false);
         setCreateMode(false);
         setSelectedLot(null);
-        setFormData({});
+        setFormData(null);
+        setPendingImageFile(null);
         refetch();
       }, 1500);
 
@@ -137,7 +158,7 @@ export default function AdminPage() {
     try {
       await deleteParkingLot(id);
 
-      if (imageUrl.startsWith('/api/images/')) {
+      if (imageUrl && imageUrl.startsWith('/api/images/')) {
         try {
           await fetch('/api/images/delete', {
             method: 'POST',
@@ -161,8 +182,27 @@ export default function AdminPage() {
     }
   };
 
-  const handleImageUpload = (url: string) => {
-    setFormData({ ...formData, image: url });
+  const handleImageSelect = (file: File) => {
+    setPendingImageFile(file);
+  };
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch('/api/upload/parking-image', {
+      method: 'POST',
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Upload failed');
+    }
+
+    // Extract filename from URL: /api/images/filename.jpg -> filename.jpg
+    return data.url.replace('/api/images/', '');
   };
 
   const getAvailabilityColor = (available: number, total: number) => {
@@ -183,7 +223,7 @@ export default function AdminPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen flex items-center justify-center pt-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-linear-to-br from-blue-50 via-white to-purple-50">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
             <p className="text-xl text-gray-600">Loading dashboard...</p>
@@ -201,7 +241,7 @@ export default function AdminPage() {
     return (
       <>
         <Header />
-        <div className="min-h-screen flex items-center justify-center pt-20 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <div className="min-h-screen flex items-center justify-center pt-20 bg-linear-to-br from-blue-50 via-white to-purple-50">
           <div className="text-center">
             <div className="mb-4">
               <span className="text-6xl">🔒</span>
@@ -220,7 +260,7 @@ export default function AdminPage() {
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 pt-20">
+      <div className="min-h-screen bg-linear-r from-blue-50 via-white to-purple-50 pt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="mb-12 text-center">
             <div className="inline-block mb-4">
@@ -228,7 +268,7 @@ export default function AdminPage() {
                 <FontAwesomeIcon icon={faParking} className="size-8" />
               </div>
             </div>
-            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-3 bg-linear-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
             <p className="text-xl text-gray-600">Manage parking lot images and information</p>
@@ -245,7 +285,7 @@ export default function AdminPage() {
               <div className="mt-6">
                 <Button 
                   onClick={handleCreate}
-                  className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-xl cursor-pointer transform hover:scale-105 transition-all"
+                  className="bg-linear-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white shadow-xl cursor-pointer transform hover:scale-105 transition-all"
                   size="lg"
                 >
                   <FontAwesomeIcon icon={faPlus} className="mr-2" />
@@ -269,7 +309,7 @@ export default function AdminPage() {
 
           {(editMode || createMode) ? (
             <Card className="mb-8 shadow-2xl border-2 border-blue-100 overflow-hidden">
-              <CardHeader className={`bg-gradient-to-r ${createMode ? 'from-green-600 to-green-800' : 'from-blue-600 to-blue-800'} text-white`}>
+              <CardHeader className={`bg-linear-r ${createMode ? 'from-green-600 to-green-800' : 'from-blue-600 to-blue-800'} text-white`}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <FontAwesomeIcon icon={createMode ? faPlus : faPencil} className="size-5" />
@@ -300,7 +340,7 @@ export default function AdminPage() {
                       </label>
                       <Input
                         value={formData?.Name || ''}
-                        onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), Name: e.target.value })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -310,7 +350,7 @@ export default function AdminPage() {
                       </label>
                       <Input
                         value={formData?.Address || ''}
-                        onChange={(e) => setFormData({ ...formData, Address: e.target.value })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), Address: e.target.value })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -330,7 +370,7 @@ export default function AdminPage() {
                       <Input
                         type="number"
                         value={formData?.TotalSpots || ''}
-                        onChange={(e) => setFormData({ ...formData, TotalSpots: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), TotalSpots: parseInt(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -341,7 +381,7 @@ export default function AdminPage() {
                       <Input
                         type="number"
                         value={formData?.AvailableSpots || ''}
-                        onChange={(e) => setFormData({ ...formData, AvailableSpots: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), AvailableSpots: parseInt(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -362,7 +402,7 @@ export default function AdminPage() {
                         type="number"
                         step="0.000001"
                         value={formData?.Latitude || ''}
-                        onChange={(e) => setFormData({ ...formData, Latitude: parseFloat(e.target.value) })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), Latitude: parseFloat(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -374,7 +414,7 @@ export default function AdminPage() {
                         type="number"
                         step="0.000001"
                         value={formData?.Longitude || ''}
-                        onChange={(e) => setFormData({ ...formData, Longitude: parseFloat(e.target.value) })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), Longitude: parseFloat(e.target.value) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -387,11 +427,12 @@ export default function AdminPage() {
                   </h3>
                   <ImageUpload
                     currentImage={formData?.ImageFileName ? `/api/images/${formData?.ImageFileName}` : undefined}
-                    onUploadComplete={handleImageUpload}
+                    onFileSelect={handleImageSelect}
                   />
-                  {formData?.ImageFileName && selectedLot && formData?.ImageFileName !== selectedLot.ImageFileName && (
-                    <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <p className="text-sm text-green-700 font-medium">✓ New image ready to save</p>
+                  {pendingImageFile && (
+                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <p className="text-sm text-blue-700 font-medium">📎 Image selected: {pendingImageFile.name}</p>
+                      <p className="text-xs text-blue-600 mt-1">Image will be uploaded when you save</p>
                     </div>
                   )}
                 </div>
@@ -404,8 +445,8 @@ export default function AdminPage() {
                       saving 
                         ? 'bg-gray-400 cursor-not-allowed pointer-events-none' 
                         : createMode
-                        ? 'bg-gradient-to-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 cursor-pointer'
-                        : 'bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
+                        ? 'bg-linear-r from-green-600 to-green-800 hover:from-green-700 hover:to-green-900 cursor-pointer'
+                        : 'bg-linear-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 cursor-pointer'
                     } text-white shadow-lg transition-all`}
                     size="lg"
                   >
@@ -455,7 +496,7 @@ export default function AdminPage() {
                           {badge.text}
                         </span>
                       </div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                      <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent"></div>
                       <div className="absolute bottom-4 left-4 right-4">
                         <h3 className="text-xl font-bold text-white drop-shadow-lg">{lot.Name}</h3>
                       </div>
@@ -493,16 +534,16 @@ export default function AdminPage() {
                             Edit
                           </Button>
                           <Button 
-                            onClick={() => handleDelete(lot.ID, lot.ImageFileName)}
-                            disabled={deleting === lot.id}
+                            onClick={() => handleDelete(lot.ID, lot.ImageFileName ?? undefined)}
+                            disabled={deleting === lot.ID}
                             className={`${
-                              deleting === lot.id
+                              deleting === lot.ID
                                 ? 'bg-gray-400 cursor-not-allowed pointer-events-none'
                                 : 'bg-red-600 hover:bg-red-700 cursor-pointer'
                             } shadow-md`}
                             size="sm"
                           >
-                            {deleting === lot.id ? (
+                            {deleting === lot.ID ? (
                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                             ) : (
                               <FontAwesomeIcon icon={faTrash} />

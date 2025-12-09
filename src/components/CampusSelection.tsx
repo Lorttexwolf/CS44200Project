@@ -52,7 +52,7 @@ export default function CampusSelection() {
               className="group"
             >
               <Card className="h-full overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer">
-                <div className="relative h-48 bg-gradient-to-br from-blue-500 to-blue-700 overflow-hidden">
+                <div className="relative h-48 bg-linear-to-br from-blue-500 to-blue-700 overflow-hidden">
                   {campus.VideoURL ? (
                     <video
                       autoPlay
@@ -72,7 +72,7 @@ export default function CampusSelection() {
                       />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
                   <div className="absolute bottom-4 left-4 right-4">
                     <ImageWithFallback 
                       src={campus.IconURL} 

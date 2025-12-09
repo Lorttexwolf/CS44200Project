@@ -1,4 +1,4 @@
-import { ParkingLot } from '@/models/ParkingLot';
+import { ParkingLot, CreateParkingLot } from '@/models/ParkingLot';
 import { useEffect, useState } from 'react';
 
 export function useParkingLots(campusId: number) {
@@ -31,7 +31,7 @@ export function useParkingLots(campusId: number) {
     }
   }, [campusId]);
 
-  const createParkingLot = async (lot: ParkingLot) => {
+  const createParkingLot = async (lot: CreateParkingLot) => {
     try {
       const response = await fetch('/api/parking-lots', {
         method: 'POST',

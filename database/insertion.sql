@@ -28,7 +28,7 @@ INSERT INTO ParkingLot (Pk_Campus_ID, Lot_Name, Address, Latitude, Longitude, Im
 (@pnw_campus_id, 'CLO/ANDERSON Lot', '789 Athletic Dr', 41.586614, -87.474168, "1764671828551-CLOANDERSON.png"),
 (@pnw_campus_id, 'Porter Lot', '789 Athletic Dr', 41.586283, -87.472905, "1764671837406-porter.png"),
 (@pnw_campus_id, 'NILS Main Lot', '789 Athletic Dr', 41.582502, -87.474121, "1764671846695-NILSLOT.jpg"),
-(@pnw_campus_id, 'Parking Garage', '789 Athletic Dr', 41.585347065461114, -87.47211545692153, "1764671855624-PGARAGE.png"),
+(@pnw_campus_id, 'Parking Garage', '789 Athletic Dr', 41.5849872, -87.4730492, "1764671855624-PGARAGE.png"),
 (@pnw_campus_id, 'NILS South Lot', '789 Athletic Dr', 41.581664606392415, -87.4742623411903, "1764671865844-NILSSOUTH.png"),
 (@pnw_campus_id, 'LAWSHE Lot', '789 Athletic Dr', 41.581723952443994, -87.47538588450159, "1764671879221-lawsheLTO.png"),
 (@pnw_campus_id, 'FNRC Parking Lot', '789 Athletic Dr', 41.58029797565626, -87.47513234013597, "1764672013930-FNRC.png"),

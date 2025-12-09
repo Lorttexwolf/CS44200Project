@@ -63,7 +63,7 @@ export default function Features() {
             </Card>
             
           ))}
-          <div id="campuses" />
+          <div id="campuses"/>
         </div>
       </HorizontalWrap>
     </section>
