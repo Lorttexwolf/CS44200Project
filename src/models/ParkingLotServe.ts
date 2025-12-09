@@ -8,6 +8,7 @@ export async function queryParkingLotsOfCampus(campusID: number) {
     const [rows] = await pool.query<RowDataPacket[]>(`
         
         SELECT 
+            l.Pk_Campus_ID,
             l.Pk_Lot_ID,
             l.Lot_Name,
             l.ImageFileName,
@@ -39,6 +40,7 @@ export async function queryParkingLotsOfCampus(campusID: number) {
         return ParkingLotSchema.parse({
 
             ID: r.Pk_Lot_ID,
+            CampusID: r.Pk_Campus_ID,
             Name: r.Lot_Name,
             Address: r.Address,
             ImageFileName: r.ImageFileName,
@@ -59,6 +61,7 @@ export async function queryParkingLot(lotID: number) {
     const [rows] = await pool.query<RowDataPacket[]>(`
         
         SELECT 
+            l.Pk_Campus_ID,
             l.Pk_Lot_ID,
             l.Lot_Name,
             l.ImageFileName,
@@ -88,6 +91,7 @@ export async function queryParkingLot(lotID: number) {
     return r ? ParkingLotSchema.parse({
 
         ID: r.Pk_Lot_ID,
+        CampusID: r.Pk_Campus_ID,
         Name: r.Lot_Name,
         Address: r.Address,
         ImageFileName: r.ImageFileName,

@@ -39,7 +39,7 @@ export default function CampusSelection() {
           <h2 className="text-4xl font-bold text-gray-900 mb-4">
             Select Your Campus
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 mx-auto">
             Choose your university to find available parking spots in real-time
           </p>
         </div>

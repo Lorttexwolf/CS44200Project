@@ -1,34 +1,31 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faMapPin,
-  faShieldHalved,
-  faBell,
+  faLocationArrow,
+  faMagnifyingGlass,
+  faShieldHalved
 } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import HorizontalWrap from "./HorizontalWrap";
 import { Card, CardContent } from "./ui/card";
 
 const features = [
   {
-    icon: faMapPin,
-    title: "Real-Time Availability",
-    description:
-      "See available spots in real-time across all campus parking lots and structures.",
+    icon: faMagnifyingGlass,
+    title: "Search for Parking",
+    description: "Select your campus and explore available parking lots near your destination.",
   },
-
   {
-    icon: faBell,
-    title: "Smart Notifications",
-    description:
-      "Get alerts when spots open up near your classes.",
+    icon: faLocationArrow,
+    title: "Get Directions",
+    description: "Navigate directly to the most convenient parking lot for your needs.",
   },
   {
     icon: faShieldHalved,
-    title: "Secure & Safe",
-    description:
-      "All parking locations are well-lit, monitored, and verified for student safety.",
+    title: "Safety Insights",
+    description: "View details on well-lit and monitored parking areas designed to support student safety.",
   },
 ];
+
 
 export default function Features() {
   return (
@@ -38,7 +35,7 @@ export default function Features() {
           <h2 className="text-gray-900 mb-4 text-3xl font-bold">
             Everything You Need to Park Smart
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 mx-auto">
             Designed specifically for college students who need reliable and fast
             parking solutions.
           </p>

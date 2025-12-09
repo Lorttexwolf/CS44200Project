@@ -28,7 +28,7 @@ export default function AdminPage() {
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>();
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
-  const [formData, setFormData] = useState<Partial<ParkingLot> & { CampusID: number }>();
+  const [formData, setFormData] = useState<(Partial<ParkingLot>) | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -85,10 +85,7 @@ export default function AdminPage() {
     try {
       if (createMode) {
         // Ensure campusId is set
-        const lotData = {
-          ...formData,
-          campusId: formData.CampusID || 1
-        } as ParkingLot;
+        const lotData = formData;
         await createParkingLot(lotData);
         setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
 
@@ -120,6 +117,7 @@ export default function AdminPage() {
         setFormData({});
         refetch();
       }, 1500);
+
     } catch (error) {
       setMessage({ type: 'error', text: createMode ? '✗ Failed to create parking lot' : '✗ Failed to update parking lot' });
     } finally {

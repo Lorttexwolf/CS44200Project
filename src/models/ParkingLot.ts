@@ -4,6 +4,7 @@ import { ParkingFloorSchema } from "./ParkingFloor";
 export const ParkingLotSchema = z.object({
 
     ID: z.number(),
+    CampusID: z.number(),
     Name: z.string(),
     Address: z.string(),
     ImageFileName: z.string().optional().nullable(),
