@@ -1,10 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faMapPin,
-  faClock,
   faShieldHalved,
-  faMobileScreenButton,
-  faDollarSign,
   faBell,
 } from "@fortawesome/free-solid-svg-icons";
 

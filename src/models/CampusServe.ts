@@ -5,7 +5,7 @@ import { Campus, CampusSchema } from "./Campus";
 export async function queryCampusByName(name: string)
 {
     const [results, fields] = (await pool.query<RowDataPacket[]>(
-        "SELECT * FROM Campus WHERE Campus_Name = ? OR Campus_Short_Name = ?",
+        "SELECT * FROM Campus WHERE LOWER(Campus_Name) = LOWER(?) OR LOWER(Campus_Short_Name) = LOWER(?)",
         [name, name]));
 
     const rawCampus = results.at(0);

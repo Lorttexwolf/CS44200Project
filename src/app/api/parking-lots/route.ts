@@ -1,4 +1,3 @@
-import { createParkingLot } from '@/lib/parkingLotService';
 import { queryParkingLotsOfCampus } from '@/models/ParkingLotServe';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -21,25 +20,6 @@ export async function GET(request: NextRequest) {
     console.error('Error fetching parking lots:', error);
     return NextResponse.json(
       { error: 'Failed to fetch parking lots' },
-      { status: 500 }
-    );
-  }
-}
-
-// POST create a new parking lot
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    const lotId = await createParkingLot(body);
-    
-    return NextResponse.json(
-      { id: lotId, message: 'Parking lot created successfully' },
-      { status: 201 }
-    );
-  } catch (error) {
-    console.error('Error creating parking lot:', error);
-    return NextResponse.json(
-      { error: 'Failed to create parking lot' },
       { status: 500 }
     );
   }

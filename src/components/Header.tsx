@@ -50,9 +50,6 @@ export default function Header() {
                         <Link href="/#team" className="text-gray-600 hover:text-gray-900 transition">
                             Team
                         </Link>
-                        <Link href="/map" className="text-gray-600 hover:text-gray-900 transition">
-                            Map
-                        </Link>
                     </nav>
 
                     {/* Desktop CTA */}
@@ -103,9 +100,6 @@ export default function Header() {
                             </Link>
                             <Link href="/#team" className="text-gray-600 hover:text-gray-900 transition">
                                 Team
-                            </Link>
-                            <Link href="/map" className="text-gray-600 hover:text-gray-900 transition">
-                                Map
                             </Link>
                             <div className="flex flex-col gap-2 pt-4 border-t">
                                 {isAuthenticated ? (

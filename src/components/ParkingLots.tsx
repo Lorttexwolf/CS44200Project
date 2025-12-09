@@ -13,13 +13,13 @@ import { Card, CardContent, CardHeader } from "./ui/card";
 
 
 
-export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
+export default function ParkingLots({ campusID, campusShortName }: { campusID: Campus["ID"], campusShortName: string }) {
   // Fetch parking lots from database (campusId = 1)
   const { parkingLots, loading, error } = useParkingLots(campusID);
   
   // Get 3 most popular (lowest availability percentage)
   const topLots = [...parkingLots]
-    .sort((a, b) => (a.available / a.total) - (b.available / b.total))
+    .sort((a, b) => (a.AvailableSpots / a.TotalSpots) - (b.AvailableSpots / b.TotalSpots))
     .slice(0, 3);
 
   const getAvailabilityColor = (available: number, total: number) => {
@@ -117,13 +117,13 @@ export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {topLots.map((lot, index) => {
-            const badge = getAvailabilityBadge(lot.available, lot.total);
+            const badge = getAvailabilityBadge(lot.AvailableSpots, lot.TotalSpots);
             return (
               <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="relative h-48">
                   <ImageWithFallback
-                    src={lot.image}
-                    alt={lot.name}
+                    src={lot.Image_URL || ''}
+                    alt={lot.Name}
                     className="w-full h-full object-cover"
                   />
                   <span className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold shadow-lg ${badge.color}`}>
@@ -134,10 +134,10 @@ export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
                 <CardHeader>
                   <div className="flex items-start justify-between">
                     <div>
-                      <h3 className="text-gray-900 mb-1">{lot.name}</h3>
+                      <h3 className="text-gray-900 mb-1">{lot.Name}</h3>
                       <p className="text-sm text-gray-500 flex items-center gap-1">
                         <FontAwesomeIcon icon={faMapPin} className="size-4" />
-                        {lot.address}
+                        {lot.Address}
                       </p>
                     </div>
                   </div>
@@ -147,10 +147,10 @@ export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-600 flex items-center gap-1">
                       <FontAwesomeIcon icon={faLocationArrow} className="size-4" />
-                      {lot.distance} away
+                      On campus
                     </span>
                     <span className="text-gray-600">
-                      {lot.covered ? "🏢 Covered" : "🌤️ Open Air"}
+                      {lot.Floors?.some(floor => floor.Features?.includes('Covered')) ? "🏢 Covered" : "🌤️ Open Air"}
                     </span>
                   </div>
 
@@ -158,21 +158,21 @@ export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
                     <div className="flex items-center justify-between mb-2 text-sm">
                       <span className="text-gray-600">Availability</span>
                       <span className="text-gray-900">
-                        {lot.available} of {lot.total} spots
+                        {lot.AvailableSpots} of {lot.TotalSpots} spots
                       </span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
                       <div
-                        className={`h-full ${getAvailabilityColor(lot.available, lot.total)} transition-all`}
-                        style={{ width: `${(lot.available / lot.total) * 100}%` }}
+                        className={`h-full ${getAvailabilityColor(lot.AvailableSpots, lot.TotalSpots)} transition-all`}
+                        style={{ width: `${(lot.AvailableSpots / lot.TotalSpots) * 100}%` }}
                       />
                     </div>
                   </div>
 
                   <div className="flex items-center justify-between pt-4 border-t">
                     <div>
-                      <p className="text-gray-900">{lot.price}</p>
-                      <p className="text-sm text-gray-500">{lot.hourlyRate}</p>
+                      <p className="text-gray-900">Free</p>
+                      <p className="text-sm text-gray-500">No hourly fee</p>
                     </div>
                     <Button className="cursor-pointer bg-blue-700 text-white hover:bg-blue-800">Reserve Now</Button>
                   </div>
@@ -183,9 +183,9 @@ export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
         </div>
 
         <div className="text-center mt-12">
-          <Link href="/map">
+          <Link href={`/${campusShortName}/map`}>
             <Button size="lg" className="px-8 border-2  hover:border-black transition-colors hover:bg-white hover:text-black cursor-pointer">
-              Look for More
+              View Map
             </Button>
           </Link>
         </div>

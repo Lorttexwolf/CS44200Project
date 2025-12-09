@@ -9,14 +9,18 @@ import { Input } from "./ui/input";
 import { useParkingLots } from "@/hooks/useParkingLots";
 import { RotatingText } from "./ui/shadcn-io/rotating-text";
 
-export default function Hero() {
+interface HeroProps {
+    campusID: number;
+    campusName: string;
+    videoURL: string;
+}
+
+export default function Hero({ campusID, campusName, videoURL }: HeroProps) {
     const [searchQuery,
         setSearchQuery] = useState("");
     const [showPreview,
         setShowPreview] = useState(false);
-    const {parkingLots, loading} = useParkingLots(1);
-
-    console.log(parkingLots);
+    const {parkingLots, loading} = useParkingLots(campusID);
 
     const filteredLots = parkingLots.filter(lot => lot.Name.toLowerCase().includes(searchQuery.toLowerCase()) || lot.Address.toLowerCase().includes(searchQuery.toLowerCase())).slice(0, 5);
 
@@ -37,7 +41,7 @@ export default function Hero() {
                     muted
                     playsInline
                     className="absolute top-0 left-0 w-full h-full object-cover brightness-50 z-0">
-                    <source src="/lotVid.mp4" type="video/mp4"/>
+                    <source src={videoURL} type="video/mp4"/>
                 </video>
             </div>
 
@@ -62,7 +66,7 @@ export default function Hero() {
                     </h1>
                 </div>
                 <p className="text-xl text-gray-100 mb-8 max-w-2xl mx-auto drop-shadow-md">
-                    Find parking spots on campus in seconds. Save time, reduce stress,
+                    Find parking spots at {campusName} in seconds. Save time, reduce stress,
                     and never miss a lecture.
                 </p>
 

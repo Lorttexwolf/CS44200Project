@@ -68,7 +68,7 @@ export default function MapPage() {
         return (
             <>
                 <Header />
-                <div className="min-h-screen flex items-center justify-center pt-20">
+                <div className="min-h-screen flex items-center justify-center">
                     <div className="text-xl text-gray-600">
                         {!L ? 'Loading map...' : 'Loading parking lots...'}
                     </div>
@@ -81,7 +81,7 @@ export default function MapPage() {
         return (
             <>
                 <Header />
-                <div className="min-h-screen flex items-center justify-center pt-20">
+                <div className="min-h-screen flex items-center justify-center">
                     <div className="text-xl text-red-600">Error loading parking lots: {error}</div>
                 </div>
             </>
@@ -91,9 +91,9 @@ export default function MapPage() {
     return (
         <>
             <Header />
-            <div className="w-full" style={{ height: 'calc(100vh - 72px)', marginTop: '72px' }}>
+            <div className="w-full" style={{ height: 'calc(100vh - 72px)' }}>
                 <MapContainer
-                    center={[41.580083, -87.472973]}
+                    center={[41.583083, -87.472973]}
                     zoom={16}
                     style={{
                         height: '100%',
