@@ -5,8 +5,9 @@ export const ParkingFloorSchema = z.object({
     ID: z.number(),
     Floor: z.number(),
     FloorName: z.string(),
-    TotalSpots: z.number(),
-    AvailableSpots: z.number(),
+    TotalSpots: z.coerce.number(),
+    AvailableSpots: z.coerce.number(),
+    Features: z.string().array(),
     CreatedAt: z.date()
 
 });
