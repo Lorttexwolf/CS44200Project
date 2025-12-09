@@ -124,7 +124,7 @@ export default function CampusHero({ videoURL }: CampusHeroProps) {
                         </div>
                     )}
                 </div>
-
+                <div id="features"/>
                 {/* <p className="text-sm text-gray-200">
                     🎓 Trusted by students across multiple universities
                 </p> */}

@@ -10,8 +10,6 @@ export default function App() {
             <CampusHero videoURL="/mainVid.mp4" />
 
             <Features />
-
-            {/* <HowItWorks /> */}
             
             <section id="campuses">
                 <CampusSelection />
