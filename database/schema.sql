@@ -17,7 +17,7 @@ CREATE TABLE Account (
     Verified BOOLEAN DEFAULT FALSE,
     First_Name VARCHAR(100) NOT NULL,
     Last_Name VARCHAR(100) NOT NULL,
-    Service_Permissions ENUM('user', 'admin', 'campus_admin') DEFAULT 'user',
+    Service_Permissions ENUM('user', 'admin') DEFAULT 'user',
     Password VARCHAR(255) NOT NULL,
     Created_At TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

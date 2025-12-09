@@ -1,21 +1,21 @@
 'use client';
 
+import { faLocationArrow, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faMapPin, faLocationArrow } from "@fortawesome/free-solid-svg-icons";
 import Link from "next/link";
 
-import HorizontalWrap from "./HorizontalWrap";
-import { Card, CardContent, CardHeader } from "./ui/card";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useParkingLots } from "@/hooks/useParkingLots";
+import { Campus } from "@/models/Campus";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import HorizontalWrap from "./HorizontalWrap";
+import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader } from "./ui/card";
 
 
 
-export default function ParkingLots() {
+export default function ParkingLots({ campusID }: { campusID: Campus["ID"] }) {
   // Fetch parking lots from database (campusId = 1)
-  const { parkingLots, loading, error } = useParkingLots(1);
+  const { parkingLots, loading, error } = useParkingLots(campusID);
   
   // Get 3 most popular (lowest availability percentage)
   const topLots = [...parkingLots]

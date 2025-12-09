@@ -1,4 +1,5 @@
 import mysql from 'mysql2/promise';
+import "server-only";
 
 // Create a connection pool for better performance
 const pool = mysql.createPool({
