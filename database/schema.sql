@@ -12,7 +12,6 @@ USE PNWPARKING;
 -- DROP TABLE IF EXISTS AccountEmailVerification;
 -- DROP TABLE IF EXISTS PasswordResetCodes;
 -- DROP TABLE IF EXISTS Account;
--- DROP VIEW IF EXISTS ParkingLotSummary;
 
 CREATE TABLE Account (
     Account_Email VARCHAR(255) PRIMARY KEY,

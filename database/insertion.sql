@@ -101,7 +101,6 @@ INSERT INTO ParkingFloorFeatures (Fk_Floor_ID, Feature_Name) VALUES
 -- Level 4
 (@floor4_id, 'Covered');
 
-
 -- Verify data
 SELECT 
     pl.Lot_Name,

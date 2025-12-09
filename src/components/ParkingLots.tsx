@@ -114,9 +114,9 @@ export default function ParkingLots({ campusID, campusShortName }: { campusID: C
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {parkingLots.length === 0 ? <p className="text-center w-full">None Available</p> : <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {parkingLots.map((lot) => <Lot key={lot.ID} lot={lot} />)}
-        </div>
+        </div>}
       </HorizontalWrap>
     </section>
   );

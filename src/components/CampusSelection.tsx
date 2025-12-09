@@ -44,7 +44,7 @@ export default function CampusSelection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {campuses.length === 0 ? <p className='text-center'>None Available</p> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {campuses.map((campus) => (
             <Link 
               key={campus.ID} 
@@ -110,7 +110,7 @@ export default function CampusSelection() {
               </Card>
             </Link>
           ))}
-        </div>
+        </div>}
       </div>
     </section>
   );
