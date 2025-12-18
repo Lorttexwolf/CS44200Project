@@ -9,11 +9,10 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useCampuses } from '@/hooks/useCampuses';
 import { useParkingLots } from '@/hooks/useParkingLots';
-import { CreateParkingLot, CreateParkingLotWithFloors, ParkingLot } from '@/models/ParkingLot';
 import { ParkingFloor } from '@/models/ParkingFloor';
+import { CreateParkingLotWithFloors, ParkingLot } from '@/models/ParkingLot';
 import {
   faCheck,
-  faClock,
   faMapMarkerAlt,
   faPencil,
   faPlus,
@@ -475,7 +474,7 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  {/* <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                     <FontAwesomeIcon icon={faClock} className="text-purple-600" />
                     Availability
                   </h3>
@@ -502,7 +501,7 @@ export default function AdminPage() {
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div>
