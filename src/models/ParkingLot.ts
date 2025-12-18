@@ -31,3 +31,10 @@ export const CreateParkingLotSchema = ParkingLotSchema.omit({
 });
 
 export type CreateParkingLot = z.infer<typeof CreateParkingLotSchema>;
+
+// Allow creating a parking lot with optional floors
+export const CreateParkingLotWithFloorsSchema = CreateParkingLotSchema.extend({
+    Floors: ParkingFloorSchema.array().optional(),
+});
+
+export type CreateParkingLotWithFloors = z.infer<typeof CreateParkingLotWithFloorsSchema>;

@@ -50,11 +50,26 @@ export async function POST(request: NextRequest) {
 		const insertId = (result as any).insertId;
 
 		// Create a default floor for the parking lot with the provided spot counts
-		await pool.query(
-			`INSERT INTO ParkingFloor (Pk_Lot_ID, Floor_Number, Floor_Name, Total_Spots, Available_Spots)
-			 VALUES (?, 1, 'Ground Floor', ?, ?)`,
-			[insertId, TotalSpots || 0, AvailableSpots || 0]
-		);
+		if (body.Floors && Array.isArray(body.Floors) && body.Floors.length > 0) {
+			// Insert provided floors
+			for (const f of body.Floors) {
+				const floorNumber = f.FloorNumber ?? f.Floor ?? 1;
+				const floorName = f.FloorName ?? 'Floor ' + floorNumber;
+				const total = f.TotalSpots || 0;
+				const avail = f.AvailableSpots || 0;
+				await pool.query(
+					`INSERT INTO ParkingFloor (Pk_Lot_ID, Floor_Number, Floor_Name, Total_Spots, Available_Spots)
+					 VALUES (?, ?, ?, ?, ?)`,
+					[insertId, floorNumber, floorName, total, avail]
+				);
+			}
+		} else {
+			await pool.query(
+				`INSERT INTO ParkingFloor (Pk_Lot_ID, Floor_Number, Floor_Name, Total_Spots, Available_Spots)
+				 VALUES (?, 1, 'Ground Floor', ?, ?)`,
+				[insertId, TotalSpots || 0, AvailableSpots || 0]
+			);
+		}
 
 		return NextResponse.json({ 
 			success: true, 

@@ -9,7 +9,8 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { useCampuses } from '@/hooks/useCampuses';
 import { useParkingLots } from '@/hooks/useParkingLots';
-import { CreateParkingLot, ParkingLot } from '@/models/ParkingLot';
+import { CreateParkingLot, CreateParkingLotWithFloors, ParkingLot } from '@/models/ParkingLot';
+import { ParkingFloor } from '@/models/ParkingFloor';
 import {
   faCheck,
   faClock,
@@ -26,7 +27,7 @@ export default function AdminPage() {
   const { user, loading: authLoading } = useAuth();
   const { campuses, loading: campusesLoading } = useCampuses();
   const [selectedCampusId, setSelectedCampusId] = useState<number>(1);
-  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch } = useParkingLots(selectedCampusId);
+  const { parkingLots, loading: lotsLoading, createParkingLot, updateParkingLot, deleteParkingLot, refetch, createFloor, updateFloor, deleteFloor } = useParkingLots(selectedCampusId);
   const [selectedLot, setSelectedLot] = useState<ParkingLot | null>(null);
   const [editMode, setEditMode] = useState(false);
   const [createMode, setCreateMode] = useState(false);
@@ -35,6 +36,9 @@ export default function AdminPage() {
   const [deleting, setDeleting] = useState<number | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [editingFloors, setEditingFloors] = useState<Record<number, Partial<ParkingFloor>>>({});
+  const [newFloor, setNewFloor] = useState<{ FloorNumber?: number; FloorName: string; TotalSpots?: number; AvailableSpots?: number }>({ FloorNumber: 0, FloorName: 'Floor 0', TotalSpots: 0, AvailableSpots: 0 });
+  const [newFloorsList, setNewFloorsList] = useState<Array<{ FloorNumber?: number; FloorName: string; TotalSpots?: number; AvailableSpots?: number }>>([]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -49,6 +53,11 @@ export default function AdminPage() {
   const handleEdit = (lot: ParkingLot) => {
     setSelectedLot(lot);
     setFormData(lot);
+    const editMap: Record<number, Partial<ParkingFloor>> = {};
+    (lot.Floors || []).forEach((f) => {
+      editMap[f.ID] = { ...f };
+    });
+    setEditingFloors(editMap);
     setEditMode(true);
     setCreateMode(false);
     setMessage(null);
@@ -60,7 +69,10 @@ export default function AdminPage() {
     setCreateMode(false);
     setFormData(null);
     setMessage(null);
+    setNewFloorsList([]);
+    setNewFloor({ FloorNumber: 0, FloorName: `Floor ${0}`, TotalSpots: 0, AvailableSpots: 0 });
   };
+
 
   const handleCreate = () => {
     setCreateMode(true);
@@ -76,6 +88,8 @@ export default function AdminPage() {
       Longitude: -87.472973,
       CampusID: selectedCampusId
     });
+    setNewFloorsList([]);
+    setNewFloor({ FloorNumber: 0, FloorName: `Floor ${0}`, TotalSpots: 0, AvailableSpots: 0 });
     setMessage(null);
   };
 
@@ -103,8 +117,9 @@ export default function AdminPage() {
         const lotData = {
           ...(formData ?? {}),
           ImageFileName: imageFileName,
-        } as CreateParkingLot;
-        await createParkingLot(lotData);
+          Floors: newFloorsList.length > 0 ? newFloorsList : undefined,
+        } as CreateParkingLotWithFloors;
+        const res = await createParkingLot(lotData);
         setMessage({ type: 'success', text: '✓ Parking lot created successfully!' });
 
       } else {
@@ -128,6 +143,28 @@ export default function AdminPage() {
           ...(formData ?? {}),
           ImageFileName: imageFileName,
         });
+
+        // Batch-update floors edited in the UI
+        const floorEntries = Object.entries(editingFloors);
+        if (floorEntries.length > 0) {
+          try {
+            await Promise.all(floorEntries.map(async ([fid, upd]) => {
+              const floorId = Number(fid);
+              const payload: any = {};
+              if (upd.Floor !== undefined) payload.FloorNumber = upd.Floor;
+              if (upd.FloorName !== undefined) payload.FloorName = upd.FloorName;
+              if (upd.TotalSpots !== undefined) payload.TotalSpots = upd.TotalSpots;
+              if (upd.AvailableSpots !== undefined) payload.AvailableSpots = upd.AvailableSpots;
+              // Only send update if payload has fields
+              if (Object.keys(payload).length > 0) {
+                await updateFloor(floorId, payload);
+              }
+            }));
+          } catch (err) {
+            console.warn('Failed to update some floors:', err);
+          }
+        }
+
         setMessage({ type: 'success', text: '✓ Parking lot updated successfully!' });
 
       }
@@ -138,6 +175,8 @@ export default function AdminPage() {
         setSelectedLot(null);
         setFormData(null);
         setPendingImageFile(null);
+        setNewFloorsList([]);
+        setNewFloor({ FloorNumber: 0, FloorName: `Floor ${0}`, TotalSpots: 0, AvailableSpots: 0 });
         refetch();
       }, 1500);
 
@@ -221,6 +260,57 @@ export default function AdminPage() {
     return { variant: 'destructive' as const, text: 'Almost Full', color: 'bg-red-100 text-red-800' };
   };
 
+  const handleCreateFloor = async () => {
+    if (!selectedLot?.ID) return;
+    try {
+      setSaving(true);
+      await createFloor(selectedLot.ID, { ...newFloor, FloorNumber: newFloor.FloorNumber ?? 1 });
+      setMessage({ type: 'success', text: '✓ Floor created' });
+      setNewFloor({ FloorNumber: 0, FloorName: `Floor ${0}`, TotalSpots: 0, AvailableSpots: 0 });
+      refetch();
+    } catch (err) {
+      setMessage({ type: 'error', text: '✗ Failed to create floor' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleUpdateFloor = async (floorId: number) => {
+    const updates = editingFloors[floorId];
+    if (!updates) return;
+    // Map client model to API payload (Floor -> FloorNumber)
+    const payload: any = {};
+    if (updates.Floor !== undefined) payload.FloorNumber = updates.Floor;
+    if (updates.FloorName !== undefined) payload.FloorName = updates.FloorName;
+    if (updates.TotalSpots !== undefined) payload.TotalSpots = updates.TotalSpots;
+    if (updates.AvailableSpots !== undefined) payload.AvailableSpots = updates.AvailableSpots;
+
+    try {
+      setSaving(true);
+      await updateFloor(floorId, payload);
+      setMessage({ type: 'success', text: '✓ Floor updated' });
+      refetch();
+    } catch (err) {
+      setMessage({ type: 'error', text: '✗ Failed to update floor' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleDeleteFloor = async (floorId: number) => {
+    if (!confirm('Are you sure you want to delete this floor?')) return;
+    try {
+      setSaving(true);
+      await deleteFloor(floorId);
+      setMessage({ type: 'success', text: '✓ Floor deleted' });
+      refetch();
+    } catch (err) {
+      setMessage({ type: 'error', text: '✗ Failed to delete floor' });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (authLoading || lotsLoading) {
     return (
       <>
@@ -270,7 +360,7 @@ export default function AdminPage() {
                 <FontAwesomeIcon icon={faParking} className="size-8" />
               </div>
             </div> */}
-            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
+            <h1 className="text-5xl font-bold mb-3 bg-linear-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
             <p className="text-xl text-gray-600">Manage parking lot images and information</p>
@@ -335,12 +425,12 @@ export default function AdminPage() {
           )}
 
           {(editMode || createMode) ? (
-            <Card className="mb-8 shadow-2xl border-2 border-blue-100 overflow-hidden bg-gray-50">
+            <Card className=" shadow-2xl border-2 border-blue-100 overflow-hidden bg-gray-50">
               <CardHeader className={`bg-linear-r ${createMode ? 'from-green-600 to-green-800' : 'from-blue-600 to-blue-800'} text-white`}>
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <FontAwesomeIcon icon={createMode ? faPlus : faPencil} className="size-5" />
-                    <CardTitle className="text-2xl">
+                  <div className="flex items-center gap-3 pt-10">
+                    <FontAwesomeIcon icon={createMode ? faPlus : faPencil} className="size-5 text-black" />
+                    <CardTitle className="text-2xl text-black">
                       {createMode ? 'Create New Parking Lot' : `Edit: ${selectedLot?.Name}`}
                     </CardTitle>
                   </div>
@@ -397,7 +487,7 @@ export default function AdminPage() {
                       <Input
                         type="number"
                         value={formData?.TotalSpots || ''}
-                        onChange={(e) => setFormData({ ...(formData ?? {}), TotalSpots: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), TotalSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -408,7 +498,7 @@ export default function AdminPage() {
                       <Input
                         type="number"
                         value={formData?.AvailableSpots || ''}
-                        onChange={(e) => setFormData({ ...(formData ?? {}), AvailableSpots: parseInt(e.target.value) })}
+                        onChange={(e) => setFormData({ ...(formData ?? {}), AvailableSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) })}
                         className="border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                       />
                     </div>
@@ -463,6 +553,157 @@ export default function AdminPage() {
                     </div>
                   )}
                 </div>
+
+                {editMode && selectedLot?.ID && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Parking Floors</h3>
+                    <div className="space-y-4 mb-4">
+                      {(selectedLot.Floors || []).map((floor) => (
+                        <div key={floor.ID} className="p-4 border rounded-lg bg-white">
+                          <div className="grid md:grid-cols-4 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Floor #</label>
+                              <Input
+                                type="number"
+                                value={editingFloors[floor.ID]?.Floor ?? floor.Floor}
+                                onChange={(e) => setEditingFloors(prev => ({ ...prev, [floor.ID]: { ...(prev[floor.ID] ?? {}), Floor: e.target.value === '' ? undefined : parseInt(e.target.value, 10) } }))}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                              <Input
+                                value={editingFloors[floor.ID]?.FloorName ?? floor.FloorName}
+                                onChange={(e) => setEditingFloors(prev => ({ ...prev, [floor.ID]: { ...(prev[floor.ID] ?? {}), FloorName: e.target.value } }))}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Total Spots</label>
+                              <Input
+                                type="number"
+                                value={editingFloors[floor.ID]?.TotalSpots ?? floor.TotalSpots}
+                                onChange={(e) => setEditingFloors(prev => ({ ...prev, [floor.ID]: { ...(prev[floor.ID] ?? {}), TotalSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) } }))}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Available</label>
+                              <Input
+                                type="number"
+                                value={editingFloors[floor.ID]?.AvailableSpots ?? floor.AvailableSpots}
+                                onChange={(e) => setEditingFloors(prev => ({ ...prev, [floor.ID]: { ...(prev[floor.ID] ?? {}), AvailableSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) } }))}
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-3 flex gap-2">
+                            <Button size="sm" variant="destructive" onClick={() => handleDeleteFloor(floor.ID)}>Delete</Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="p-4 border rounded-lg bg-white">
+                        <h4 className="text-sm font-semibold mb-2">Add New Floor</h4>
+                        <div className="grid md:grid-cols-4 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Floor #</label>
+                            <Input type="number" value={newFloor.FloorNumber} onChange={(e) => setNewFloor(prev => ({ ...prev, FloorNumber: e.target.value === '' ? undefined : parseInt(e.target.value, 10) }))} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                            <Input value={newFloor.FloorName} onChange={(e) => setNewFloor(prev => ({ ...prev, FloorName: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Total Spots</label>
+                            <Input type="number" value={newFloor.TotalSpots} onChange={(e) => setNewFloor(prev => ({ ...prev, TotalSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) }))} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Available</label>
+                            <Input type="number" value={newFloor.AvailableSpots} onChange={(e) => setNewFloor(prev => ({ ...prev, AvailableSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) }))} />
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <Button onClick={handleCreateFloor} className="bg-green-600 hover:bg-green-700">Add Floor</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {createMode && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Parking Floors (New Lot)</h3>
+                    <div className="space-y-4 mb-4">
+                      {newFloorsList.map((f, idx) => (
+                        <div key={idx} className="p-4 border rounded-lg bg-white">
+                          <div className="grid md:grid-cols-4 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Floor #</label>
+                              <Input
+                                type="number"
+                                value={f.FloorNumber}
+                                onChange={(e) => setNewFloorsList(prev => prev.map((p, i) => i === idx ? { ...p, FloorNumber: e.target.value === '' ? undefined : parseInt(e.target.value, 10) } : p))}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                              <Input
+                                value={f.FloorName}
+                                onChange={(e) => setNewFloorsList(prev => prev.map((p, i) => i === idx ? { ...p, FloorName: e.target.value } : p))}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Total Spots</label>
+                              <Input
+                                type="number"
+                                value={f.TotalSpots}
+                                onChange={(e) => setNewFloorsList(prev => prev.map((p, i) => i === idx ? { ...p, TotalSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) } : p))}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-600 mb-1">Available</label>
+                              <Input
+                                type="number"
+                                value={f.AvailableSpots}
+                                onChange={(e) => setNewFloorsList(prev => prev.map((p, i) => i === idx ? { ...p, AvailableSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) } : p))}
+                              />
+                            </div>
+                          </div>
+                          <div className="mt-3 flex gap-2">
+                            <Button size="sm" onClick={() => setNewFloorsList(prev => prev.filter((_, i) => i !== idx))} variant="destructive">Remove</Button>
+                          </div>
+                        </div>
+                      ))}
+
+                      <div className="p-4 border rounded-lg bg-white">
+                        <h4 className="text-sm font-semibold mb-2">Add Floor</h4>
+                        <div className="grid md:grid-cols-4 gap-3">
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Floor #</label>
+                            <Input type="number" value={newFloor.FloorNumber} onChange={(e) => setNewFloor(prev => ({ ...prev, FloorNumber: e.target.value === '' ? undefined : parseInt(e.target.value, 10) }))} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Name</label>
+                            <Input value={newFloor.FloorName} onChange={(e) => setNewFloor(prev => ({ ...prev, FloorName: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Total Spots</label>
+                            <Input type="number" value={newFloor.TotalSpots} onChange={(e) => setNewFloor(prev => ({ ...prev, TotalSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) }))} />
+                          </div>
+                          <div>
+                            <label className="block text-xs font-medium text-gray-600 mb-1">Available</label>
+                            <Input type="number" value={newFloor.AvailableSpots} onChange={(e) => setNewFloor(prev => ({ ...prev, AvailableSpots: e.target.value === '' ? undefined : parseInt(e.target.value, 10) }))} />
+                          </div>
+                        </div>
+                        <div className="mt-3">
+                          <Button onClick={() => {
+                              const floorNumber = newFloor.FloorNumber ?? 0;
+                              const name = newFloor.FloorName && newFloor.FloorName.trim() !== '' ? newFloor.FloorName : `Floor ${floorNumber}`;
+                              setNewFloorsList(prev => [...prev, { ...newFloor, FloorNumber: floorNumber, FloorName: name }]);
+                              setNewFloor({ FloorNumber: 0, FloorName: `Floor ${0}`, TotalSpots: 0, AvailableSpots: 0 });
+                            }} className="bg-green-600 hover:bg-green-700">Add Floor</Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div className="flex gap-4 pt-6 border-t">
                   <Button
