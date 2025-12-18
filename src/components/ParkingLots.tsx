@@ -8,6 +8,7 @@ import { useParkingLots } from "@/hooks/useParkingLots";
 import useWeather from "@/hooks/useWeather";
 import { Campus } from "@/models/Campus";
 import { ParkingLot } from "@/models/ParkingLot";
+import { useState } from "react";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import HorizontalWrap from "./HorizontalWrap";
 import { Card, CardContent, CardHeader } from "./ui/card";
@@ -130,6 +131,8 @@ function Lot({ lot }: { lot: ParkingLot }) {
   const badge = getAvailabilityBadge(lot.AvailableSpots, lot.TotalSpots);
   const isCovered = lot.Floors?.some(floor => floor.Features?.includes('Covered'));
 
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow bg-gray-50">
       <div className="relative h-48">
@@ -193,6 +196,57 @@ function Lot({ lot }: { lot: ParkingLot }) {
               style={{ width: `${(lot.AvailableSpots / lot.TotalSpots) * 100}%` }}
             />
           </div>
+
+          {!expanded && lot.Floors && lot.Floors.length > 1 && <div 
+            className="flex gap-1.5 text-gray-600 text-sm opacity-75 hover:opacity-100 cursor-pointer mt-3"
+            onClick={() => setExpanded(true)}>
+
+            <p className="text-gray-600 text-sm button">+ See Floors</p>
+            
+          </div>}
+
+          {expanded && lot.Floors && lot.Floors.length > 1 && (
+            <div className="border-t pt-2">
+              {lot.Floors.map((floor, idx: number) => (
+                <div key={idx} className="mb-2">
+
+                  <div className="flex gap-2 items-center mb-2">
+
+                    <div className="text-nowrap text-gray-600">
+                      <span className="text-xs">{floor.FloorName} </span>
+                      <span className="text-xs font-medium">{" "}({floor.AvailableSpots} / {floor.TotalSpots})</span>
+                    </div>
+
+                    <div className=" bg-gray-200 rounded-full h-2 w-full">
+                      <div
+                        className={`h-full rounded-full w-full  ${getAvailabilityColor(floor.AvailableSpots, floor.TotalSpots)}`}
+                        style={{ width: `${(floor.AvailableSpots / floor.TotalSpots) * 100}%` }}
+                      />
+                    </div>
+
+                  </div>
+                  {floor.Features && floor.Features.length > 0 && (
+                    <div className="flex gap-1 mt-1 flex-wrap">
+                      {floor.Features.map((feature: string, idx: number) => (
+                        <span key={idx} className="text-[10px] bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {expanded && lot.Floors && lot.Floors.length > 1 && <div 
+            className="flex gap-1.5 text-gray-600 text-sm opacity-75 hover:opacity-100 cursor-pointer mt-3"
+            onClick={() => setExpanded(false)}>
+
+            <p className="text-gray-600 text-sm button">- Hide Floors</p>
+            
+          </div>}
+          
         </div>
 
         <div className="pt-4 border-t">

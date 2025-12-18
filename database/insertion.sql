@@ -96,10 +96,7 @@ INSERT INTO ParkingFloorFeatures (Fk_Floor_ID, Feature_Name) VALUES
 
 -- Level 3
 (@floor3_id, 'Covered'),
-(@floor3_id, 'EV Charging'),
-
--- Level 4
-(@floor4_id, 'Covered');
+(@floor3_id, 'EV Charging');
 
 -- Verify data
 SELECT 

@@ -16,7 +16,7 @@ export type Forecast = z.infer<typeof ForecastSchema>;
 
 async function fetchGridOfCoordinates(latitude: number, longitude: number)
 {
-    const req = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`, { cache: "force-cache" });
+    const req = await fetch(`https://api.weather.gov/points/${latitude},${longitude}`, { next: { revalidate: 3600 } });
     
     const JSON = await req.json();
     const gridX = JSON.properties.gridX as number;
@@ -27,7 +27,7 @@ async function fetchGridOfCoordinates(latitude: number, longitude: number)
 
 async function fetchShortForecast(gridX: number, gridY: number)
 {
-    const req = await fetch(`https://api.weather.gov/gridpoints/LOT/${gridX},${gridY}/forecast?units=us`, { cache: "force-cache" });
+    const req = await fetch(`https://api.weather.gov/gridpoints/LOT/${gridX},${gridY}/forecast?units=us`, { next: { revalidate: 3600 } });
     
     const JSON = await req.json();
     const currentForecast = JSON.properties.periods[0];
