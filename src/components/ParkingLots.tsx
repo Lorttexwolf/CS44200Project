@@ -1,6 +1,6 @@
 'use client';
 
-import { faMapPin } from "@fortawesome/free-solid-svg-icons";
+import { faLocationArrow, faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleMapsDirections } from "@/hooks/useMap";
@@ -159,12 +159,12 @@ function Lot({ lot }: { lot: ParkingLot }) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between text-sm">
-          {/* <span className="text-gray-600 flex items-center gap-1">
+        <div className="flex max-md:flex-col items-center justify-between text-xs gap-3">
+          <span className="text-gray-600 flex items-center text-nowrap gap-1">
             <FontAwesomeIcon icon={faLocationArrow} className="size-4" />
             On Campus
-          </span> */}
-          <span className="text-gray-600">
+          </span>
+          <span className="text-gray-600 text-right">
 
             {(!isCovered && weather.forecast && !weather.isPending) ? <>
 
@@ -217,7 +217,7 @@ function Lot({ lot }: { lot: ParkingLot }) {
                       <span className="text-xs font-medium">{" "}({floor.AvailableSpots} / {floor.TotalSpots})</span>
                     </div>
 
-                    <div className=" bg-gray-200 rounded-full h-2 w-full">
+                    <div className=" bg-gray-200 rounded-full h-2 mt-1 w-full">
                       <div
                         className={`h-full rounded-full w-full  ${getAvailabilityColor(floor.AvailableSpots, floor.TotalSpots)}`}
                         style={{ width: `${(floor.AvailableSpots / floor.TotalSpots) * 100}%` }}
@@ -225,6 +225,7 @@ function Lot({ lot }: { lot: ParkingLot }) {
                     </div>
 
                   </div>
+                  
                   {floor.Features && floor.Features.length > 0 && (
                     <div className="flex gap-1 mt-1 flex-wrap">
                       {floor.Features.map((feature: string, idx: number) => (
