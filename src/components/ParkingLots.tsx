@@ -1,6 +1,6 @@
 'use client';
 
-import { faLocationArrow, faMapPin } from "@fortawesome/free-solid-svg-icons";
+import { faMapPin } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { useGoogleMapsDirections } from "@/hooks/useMap";
@@ -160,10 +160,10 @@ function Lot({ lot }: { lot: ParkingLot }) {
 
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-600 flex items-center gap-1">
+          {/* <span className="text-gray-600 flex items-center gap-1">
             <FontAwesomeIcon icon={faLocationArrow} className="size-4" />
             On Campus
-          </span>
+          </span> */}
           <span className="text-gray-600">
 
             {(!isCovered && weather.forecast && !weather.isPending) ? <>
